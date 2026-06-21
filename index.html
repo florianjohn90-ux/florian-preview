@@ -2709,23 +2709,7 @@ function buildModalHTML(item) {
           </div>
         </div>
       </div>
-      <div class="reel-sliders">
-        <div class="reel-slider-row">
-          <label>Panel Deckkraft</label>
-          <input type="range" id="sliderOpacity" min="0" max="1" step="0.01" value="${opacity}">
-          <span id="valOpacity">${opacity.toFixed(2)}</span>
-        </div>
-        <div class="reel-slider-row">
-          <label>Panel Blur (px)</label>
-          <input type="range" id="sliderBlur" min="0" max="20" step="1" value="${blur}">
-          <span id="valBlur">${blur}</span>
-        </div>
-        <div class="reel-slider-row">
-          <label>Helles Panel</label>
-          <input type="checkbox" id="toggleDark" ${dark ? 'checked' : ''}>
-          <span id="valDark">${dark ? 'An' : 'Aus'}</span>
-        </div>
-      </div>`;
+      `;
   } else if (item.format === 'carousel' && item.asset_urls && item.asset_urls.length > 0) {
     mediaHTML = `
       <div class="modal-viewer" style="flex-direction:column;gap:12px;">
@@ -2780,6 +2764,25 @@ function buildModalHTML(item) {
         <div class="modal-hook">${item.hook || ''}</div>
         ${scenesHTML}
         ${item.caption && item.loop_scenes ? `<p class="modal-section-label">Caption</p><div class="modal-caption" style="flex:none;max-height:120px;">${item.caption}</div>` : ''}
+        ${item.format === 'loop_reel' ? `
+        <p class="modal-section-label" style="margin-top:12px">Panel-Einstellungen</p>
+        <div class="reel-sliders">
+          <div class="reel-slider-row">
+            <label>Panel Deckkraft</label>
+            <input type="range" id="sliderOpacity" min="0" max="1" step="0.01" value="${opacity}">
+            <span id="valOpacity">${opacity.toFixed(2)}</span>
+          </div>
+          <div class="reel-slider-row">
+            <label>Panel Blur (px)</label>
+            <input type="range" id="sliderBlur" min="0" max="20" step="1" value="${blur}">
+            <span id="valBlur">${blur}</span>
+          </div>
+          <div class="reel-slider-row">
+            <label>Helles Panel</label>
+            <input type="checkbox" id="toggleDark" ${dark ? 'checked' : ''}>
+            <span id="valDark">${dark ? 'An' : 'Aus'}</span>
+          </div>
+        </div>` : ''}
       </div>
     </div>
     <div class="modal-footer">
