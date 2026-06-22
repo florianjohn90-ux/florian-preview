@@ -3171,6 +3171,28 @@ document.getElementById('loadingState').style.display = 'none';
 document.getElementById('grid').style.display = 'grid';
 renderAll();
 tryFetchFresh(); // optional enhancement if PAT exists
+
+// One-time token bootstrap: if no token is present yet, show a paste banner.
+// After pasting once it is stored in localStorage and never asked again.
+(function tokenBanner() {
+  if (_T) return;
+  const bar = document.createElement('div');
+  bar.style.cssText = 'position:fixed;left:0;right:0;bottom:0;z-index:9999;background:#111;color:#fff;'
+    + 'padding:14px 18px;display:flex;gap:10px;align-items:center;flex-wrap:wrap;'
+    + 'font:14px/1.4 Inter,system-ui,sans-serif;box-shadow:0 -2px 12px rgba(0,0,0,.3)';
+  bar.innerHTML = '<span style="flex:1;min-width:220px">🔑 Einmalig: Token einfügen, damit Freigaben gespeichert werden. '
+    + 'Danach nie wieder nötig.</span>'
+    + '<input id="tokInput" type="password" placeholder="ghp_… / github_pat_…" '
+    + 'style="flex:2;min-width:240px;padding:8px 10px;border-radius:8px;border:1px solid #444;background:#222;color:#fff">'
+    + '<button id="tokSave" style="padding:8px 16px;border:0;border-radius:8px;background:#8BC540;color:#fff;font-weight:700;cursor:pointer">Speichern</button>';
+  document.body.appendChild(bar);
+  document.getElementById('tokSave').addEventListener('click', () => {
+    const v = document.getElementById('tokInput').value.trim();
+    if (!v) return;
+    try { localStorage.setItem('fj_gh_token', v); } catch (e) {}
+    location.reload();
+  });
+})();
 </script>
 </body>
 </html>
