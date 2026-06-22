@@ -1001,6 +1001,7 @@
   }
   .modal-actions .btn-approve { background: #8BC540; color: #fff; }
   .modal-actions .btn-reject { background: #ef4444; color: #fff; }
+  .modal-actions .btn-revise { background: #111; color: #fff; }
   .modal-actions button:hover { opacity: 0.9; }
   .modal-actions button:active { transform: scale(0.98); }
 
@@ -1406,7 +1407,7 @@ const EMBEDDED_QUEUE = [
     "format": "loop_reel",
     "status": "pending_approval",
     "hook": "KINDERVERSICHERUNGEN DIE SICH NICHT LOHNEN",
-    "caption": "Ausbildungsversicherungen mit unter 2% Rendite, Kinderunfallversicherungen die in den meisten Fällen unnötig sind — 50 €/Monat im ETF-Sparplan ergeben nach 18 Jahren 21.000 €. Lass dich nicht von Provisionsinteressen leiten. Ich erkläre dir, was wirklich sinnvoll ist. Link in Bio. #Kinderversicherung #ETFSparplan #Kinderfinanzen #Finanzberater #Familiensteuern",
+    "caption": "Ausbildungsversicherungen mit unter 2% Rendite klingen sicher — bringen aber kaum etwas. 50 €/Monat im ETF-Sparplan ergeben nach 18 Jahren historisch deutlich mehr. Lass dich nicht von Provisionsinteressen leiten. Ich erkläre dir, was wirklich sinnvoll ist. Link in Bio. #Kinderversicherung #ETFSparplan #Kinderfinanzen #Finanzberater #Familiensteuern",
     "platform": "instagram",
     "broll_url": "https://d8j0ntlcm91z4.cloudfront.net/user_36k97Z8kXcnbegP7zyOt6RJ0mbh/hf_20260619_061133_15ff418f-046c-4a37-8fcb-ace76121c34d.mp4",
     "video_url": "https://d8j0ntlcm91z4.cloudfront.net/user_36k97Z8kXcnbegP7zyOt6RJ0mbh/hf_20260619_061133_15ff418f-046c-4a37-8fcb-ace76121c34d.mp4",
@@ -1418,11 +1419,6 @@ const EMBEDDED_QUEUE = [
         "headline": "AUSBILDUNGSVERSICHERUNG: FINGER WEG",
         "body": "Rendite oft unter 2%. 50 €/Monat × 18 Jahre: Einzahlung 10.800 €, Auszahlung ca. 12.000 €. Im ETF-Sparplan: 21.380 €. Der Unterschied ist 9.380 €.",
         "dur": 9
-      },
-      {
-        "headline": "KINDERUNFALLVERSICHERUNG",
-        "body": "Kinder sind über gesetzliche Unfallversicherung und Haftpflicht der Eltern meist gut abgesichert. Extra-Unfallversicherung ist in den meisten Fällen doppelt.",
-        "dur": 10
       },
       {
         "headline": "WAS DU WIRKLICH BRAUCHST",
@@ -2057,7 +2053,7 @@ const EMBEDDED_QUEUE = [
     "format": "loop_reel",
     "status": "pending_approval",
     "hook": "KINDERVERSICHERUNGEN DIE SICH NICHT LOHNEN",
-    "caption": "Ausbildungsversicherungen mit unter 2% Rendite, Kinderunfallversicherungen die in den meisten Fällen unnötig sind — 50 €/Monat im ETF-Sparplan ergeben nach 18 Jahren 21.000 €. Lass dich nicht von Provisionsinteressen leiten. Ich erkläre dir, was wirklich sinnvoll ist. Link in Bio. #Kinderversicherung #ETFSparplan #Kinderfinanzen #Finanzberater #Familiensteuern",
+    "caption": "Ausbildungsversicherungen mit unter 2% Rendite klingen sicher — bringen aber kaum etwas. 50 €/Monat im ETF-Sparplan ergeben nach 18 Jahren historisch deutlich mehr. Lass dich nicht von Provisionsinteressen leiten. Ich erkläre dir, was wirklich sinnvoll ist. Link in Bio. #Kinderversicherung #ETFSparplan #Kinderfinanzen #Finanzberater #Familiensteuern",
     "platform": "instagram",
     "broll_url": "https://d8j0ntlcm91z4.cloudfront.net/user_36k97Z8kXcnbegP7zyOt6RJ0mbh/hf_20260619_062025_f77ec165-2953-44e6-8d17-382bf2f95160.mp4",
     "video_url": "https://d8j0ntlcm91z4.cloudfront.net/user_36k97Z8kXcnbegP7zyOt6RJ0mbh/hf_20260619_062025_f77ec165-2953-44e6-8d17-382bf2f95160.mp4",
@@ -2069,11 +2065,6 @@ const EMBEDDED_QUEUE = [
         "headline": "AUSBILDUNGSVERSICHERUNG: FINGER WEG",
         "body": "Rendite oft unter 2%. 50 €/Monat × 18 Jahre: Einzahlung 10.800 €, Auszahlung ca. 12.000 €. Im ETF-Sparplan: 21.380 €. Der Unterschied ist 9.380 €.",
         "dur": 9
-      },
-      {
-        "headline": "KINDERUNFALLVERSICHERUNG",
-        "body": "Kinder sind über gesetzliche Unfallversicherung und Haftpflicht der Eltern meist gut abgesichert. Extra-Unfallversicherung ist in den meisten Fällen doppelt.",
-        "dur": 10
       },
       {
         "headline": "WAS DU WIRKLICH BRAUCHST",
@@ -2581,6 +2572,23 @@ let _qsha = null;
 let activeFilter = 'all';
 let openItemId = null;
 
+// Format-aware status label. Only carousels generate images after content
+// approval; reels/single images go straight to "ready to post".
+function fmtStatus(item) {
+  switch (item.status) {
+    case 'pending_approval':        return 'Ausstehend';
+    case 'approved':                return item.format === 'carousel'
+                                      ? 'Inhalt ✓ · Bilder werden generiert…'
+                                      : 'Freigegeben ✓ · wird gepostet';
+    case 'images_pending_approval': return '🖼 Bilder prüfen';
+    case 'images_approved':         return 'Bereit zum Posten';
+    case 'revision_requested':      return '✏️ Kritik erhalten · wird überarbeitet';
+    case 'rejected':                return 'Abgelehnt';
+    case 'posted':                  return 'Gepostet';
+    default:                        return item.status;
+  }
+}
+
 // ── Fetch fresh queue from GitHub API ──
 
 async function tryFetchFresh() {
@@ -2667,7 +2675,7 @@ function buildCard(item) {
   body.innerHTML = `
     <div class="card-meta">
       <span class="scheduled-time">${fmtTime(item.scheduledFor)}</span>
-      <span class="status-badge status-${item.status}">${statusLabel[item.status] || item.status}</span>
+      <span class="status-badge status-${item.status}">${fmtStatus(item)}</span>
     </div>
     <div class="card-hook">${item.hook || ''}</div>
     ${item.loop_scenes ? `<div class="scene-count">${item.loop_scenes.length} Szenen</div>` : ''}
@@ -2812,6 +2820,51 @@ async function updateStatus(id, newStatus, feedback) {
   }
 }
 
+// ── Submit critique → mark for rework ──────────────────────────
+// Saves the feedback, sets status to "revision_requested" and kicks off the
+// content-generation workflow, which reworks the post and sets it back to
+// "pending_approval" for a fresh review.
+async function submitRevision(id, feedback) {
+  const idx = QUEUE.findIndex(i => i.id === id);
+  if (idx === -1) return;
+  const item = QUEUE[idx];
+  item.status = 'revision_requested';
+  item.feedback = feedback;
+  item.revisionRequestedAt = new Date().toISOString();
+  renderAll();
+  if (openItemId === id) openModal(id);
+  showToast('Kritik wird abgeschickt…');
+
+  try {
+    if (!_qsha) {
+      const r0 = await fetch(`https://api.github.com/repos/${REPO}/contents/florian/content/queue.json?ref=${BRANCH}`, {
+        headers: { Authorization: `Bearer ${_T}`, Accept: 'application/vnd.github.v3+json' }
+      });
+      _qsha = (await r0.json()).sha;
+    }
+    const content = btoa(unescape(encodeURIComponent(JSON.stringify(QUEUE, null, 2))));
+    const r = await fetch(`https://api.github.com/repos/${REPO}/contents/florian/content/queue.json`, {
+      method: 'PUT',
+      headers: { Authorization: `Bearer ${_T}`, Accept: 'application/vnd.github.v3+json', 'Content-Type': 'application/json' },
+      body: JSON.stringify({ message: `revise: ${id}`, content, sha: _qsha, branch: BRANCH })
+    });
+    const d = await r.json();
+    if (!r.ok) throw new Error(d.message);
+    _qsha = d.content.sha;
+
+    // Kick off the rework workflow automatically
+    fetch(`https://api.github.com/repos/${REPO}/actions/workflows/revise-content.yml/dispatches`, {
+      method: 'POST',
+      headers: { Authorization: `Bearer ${_T}`, Accept: 'application/vnd.github.v3+json', 'Content-Type': 'application/json' },
+      body: JSON.stringify({ ref: BRANCH })
+    }).catch(() => {});
+
+    showToast('✓ Kritik angekommen — Post wird überarbeitet und kommt zurück zur Prüfung');
+  } catch (e) {
+    showToast('Fehler: ' + e.message);
+  }
+}
+
 // ── Toast ───────────────────────────────────────────────────────
 
 let toastTimer;
@@ -2951,6 +3004,10 @@ function openModal(id) {
       if (action === 'approve') await updateStatus(id, 'approved', feedback || undefined);
       else if (action === 'approve_images') await updateStatus(id, 'images_approved', feedback || undefined);
       else if (action === 'reject') await updateStatus(id, 'rejected', feedback || undefined);
+      else if (action === 'revise') {
+        if (!feedback) { showToast('Bitte erst deine Kritik eintippen.'); return; }
+        await submitRevision(id, feedback);
+      }
     });
   });
 
@@ -3079,7 +3136,7 @@ function buildModalHTML(item) {
         <div class="modal-header">
           <span class="format-badge fmt-${item.format}">${item.format.replace('_', ' ')}</span>
           <span class="modal-time">${fmtTime(item.scheduledFor)}</span>
-          <span class="status-badge status-${item.status}">${statusLabel[item.status] || item.status}</span>
+          <span class="status-badge status-${item.status}">${fmtStatus(item)}</span>
         </div>
         <div class="modal-hook">${item.hook || ''}</div>
         ${scenesHTML}
@@ -3106,13 +3163,14 @@ function buildModalHTML(item) {
       </div>
     </div>
     <div class="modal-footer">
-      <textarea class="modal-feedback" placeholder="Feedback (optional)…">${item.feedback || ''}</textarea>
+      <textarea class="modal-feedback" id="modalFeedback" placeholder="Kritik / Änderungswunsch eingeben… (z.B. 'Kinderunfallversicherung raus')">${item.feedback || ''}</textarea>
       <div class="modal-actions">
         ${item.status === 'images_pending_approval'
           ? `<button class="btn-approve" data-modal-action="approve_images">🖼 Bilder freigeben</button>`
           : item.status === 'pending_approval'
             ? `<button class="btn-approve" data-modal-action="approve">✓ Inhalt freigeben</button>`
             : ''}
+        <button class="btn-revise" data-modal-action="revise">✏️ Kritik abschicken &amp; überarbeiten</button>
         ${(item.status === 'pending_approval' || item.status === 'images_pending_approval')
           ? `<button class="btn-reject" data-modal-action="reject">✗ Ablehnen</button>`
           : ''}
