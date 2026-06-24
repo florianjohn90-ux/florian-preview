@@ -1,0 +1,3283 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Florian John · Kinderfinanzen – Content-Freigabe</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { font-size: 16px; }
+  body {
+    font-family: 'Inter', sans-serif;
+    background: #fff;
+    color: #111;
+    min-height: 100vh;
+  }
+
+  /* HEADER */
+  .site-header {
+    background: #fff;
+    border-bottom: 1px solid #e5e5e5;
+    padding: 20px 32px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  .header-inner {
+    max-width: 1400px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 16px;
+  }
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+  .brand-accent {
+    width: 4px;
+    height: 40px;
+    background: #8BC540;
+    border-radius: 2px;
+    flex-shrink: 0;
+  }
+  .brand-text h1 {
+    font-size: 18px;
+    font-weight: 800;
+    letter-spacing: -0.3px;
+    line-height: 1.2;
+  }
+  .brand-text p {
+    font-size: 12px;
+    color: #888;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-top: 2px;
+  }
+
+  /* STATS BAR */
+  .stats-bar {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    flex-wrap: wrap;
+  }
+  .stat {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 13px;
+    font-weight: 600;
+  }
+  .stat-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+  .stat-dot.approved { background: #22c55e; }
+  .stat-dot.pending { background: #eab308; }
+  .stat-dot.rejected { background: #ef4444; }
+  .stat-count { font-weight: 800; }
+
+  /* Header action buttons */
+  .header-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .btn-reload {
+    padding: 8px 16px;
+    border-radius: 8px;
+    border: 1.5px solid #e5e5e5;
+    background: #fff;
+    font-size: 13px;
+    font-weight: 600;
+    font-family: 'Inter', sans-serif;
+    cursor: pointer;
+    color: #333;
+    transition: background 0.15s, border-color 0.15s;
+  }
+  .btn-reload:hover { background: #f5f5f5; border-color: #ccc; }
+  .btn-gear {
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+    border: 1.5px solid #e5e5e5;
+    background: #fff;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.15s;
+    color: #555;
+    font-size: 16px;
+  }
+  .btn-gear:hover { background: #f5f5f5; }
+
+  /* FILTER */
+  .filter-bar {
+    background: #fafafa;
+    border-bottom: 1px solid #e5e5e5;
+    padding: 14px 32px;
+  }
+  .filter-inner {
+    max-width: 1400px;
+    margin: 0 auto;
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+  .filter-pill {
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    border: 2px solid transparent;
+    background: #efefef;
+    color: #555;
+    transition: all 0.15s;
+    user-select: none;
+  }
+  .filter-pill:hover { background: #e0e0e0; }
+  .filter-pill.active {
+    background: #8BC540;
+    color: #fff;
+    border-color: #7ab035;
+  }
+
+  /* MAIN GRID */
+  .main {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 32px;
+  }
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+  }
+  @media (max-width: 1100px) { .grid { grid-template-columns: repeat(2, 1fr); } }
+  @media (max-width: 720px) { .grid { grid-template-columns: 1fr; } .main { padding: 16px; } .site-header { padding: 16px; } .filter-bar { padding: 12px 16px; } }
+
+  /* CARD */
+  .card {
+    border: 1.5px solid #e5e5e5;
+    border-radius: 16px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    transition: box-shadow 0.2s;
+    background: #fff;
+  }
+  .card:hover { box-shadow: 0 4px 24px rgba(0,0,0,0.1); }
+  .card.hidden { display: none; }
+
+  /* THUMBNAIL */
+  .thumb-container {
+    position: relative;
+    width: 100%;
+    height: 260px;
+    background: #111;
+    overflow: hidden;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .thumb-container img {
+    height: 100%;
+    width: auto;
+    max-width: 100%;
+    object-fit: contain;
+    display: block;
+  }
+  .thumb-container video {
+    height: 100%;
+    width: auto;
+    max-width: 100%;
+    object-fit: contain;
+    display: block;
+  }
+  .thumb-placeholder {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    color: #aaa;
+    font-size: 13px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  .thumb-placeholder svg { opacity: 0.4; }
+
+  /* LOOP REEL TEXT OVERLAY (CSS simulation of ffmpeg drawtext) */
+  .reel-wrap {
+    position: relative;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .reel-wrap video {
+    height: 100%;
+    width: auto;
+    max-width: 100%;
+    object-fit: contain;
+    display: block;
+  }
+  .reel-scrim {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to bottom, rgba(0,0,0,0.15) 0%, rgba(0,0,0,0.55) 35%, rgba(0,0,0,0.55) 80%, rgba(0,0,0,0.2) 100%);
+    pointer-events: none;
+  }
+  .reel-brand {
+    position: absolute;
+    top: 8px;
+    left: 10px;
+    font-size: 8px;
+    font-weight: 700;
+    color: rgba(255,255,255,0.85);
+    letter-spacing: 0.4px;
+    text-shadow: 0 1px 3px rgba(0,0,0,0.7);
+    pointer-events: none;
+  }
+  .reel-text-block {
+    position: absolute;
+    left: 0; right: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    padding: 0 10px;
+    pointer-events: none;
+  }
+  .reel-line {
+    display: block;
+    font-size: 8.5px;
+    font-weight: 700;
+    text-align: center;
+    line-height: 1.35;
+    text-shadow: 0 1px 4px rgba(0,0,0,0.9), 0 0 8px rgba(0,0,0,0.6);
+    white-space: pre-wrap;
+    margin-bottom: 1px;
+    color: #ffffff;
+  }
+  .reel-line.headline {
+    font-size: 10px;
+    font-weight: 900;
+    color: #8BC540;
+    margin-top: 2px;
+    letter-spacing: 0.3px;
+  }
+  .reel-scene-gap { height: 7px; }
+
+/* ── Glass Panel (Reel) ─────────────────────────────────────── */
+.reel-glass-panel {
+  position: absolute;
+  left: 6px; right: 6px; top: 8px; bottom: 8px;
+  border-radius: 9px;
+  border: 1px solid rgba(255,255,255,0.30);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.35), 0 4px 20px rgba(0,0,0,0.3);
+  pointer-events: none;
+  overflow: hidden;
+}
+.reel-glass-panel::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0; height: 3px;
+  background: linear-gradient(90deg, transparent, #4d7c14, transparent);
+}
+.reel-panel-inner {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 20px 10px 12px;
+  overflow: hidden;
+  text-align: center;
+}
+.reel-panel-brand {
+  position: absolute;
+  top: 7px; left: 0; right: 0;
+  text-align: center;
+  font-size: 5.5px;
+  font-weight: 700;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  color: rgba(30,50,10,0.5);
+}
+.reel-panel-title {
+  font-size: 8px;
+  font-weight: 900;
+  text-transform: uppercase;
+  line-height: 1.25;
+  color: #1a1a1a;
+  margin-bottom: 5px;
+  font-family: 'Arial Black', sans-serif;
+}
+.reel-panel-divider {
+  width: 20px; height: 2px;
+  background: #4d7c14;
+  border-radius: 1px;
+  margin: 0 auto 6px;
+  flex-shrink: 0;
+}
+.reel-sec-headline {
+  display: block;
+  font-size: 7px;
+  font-weight: 900;
+  text-transform: uppercase;
+  color: #4d7c14;
+  line-height: 1.3;
+  margin-top: 7px;
+  margin-bottom: 2px;
+  font-family: 'Arial Black', sans-serif;
+}
+.reel-sec-body {
+  display: block;
+  font-size: 6px;
+  font-weight: 700;
+  font-family: Arial, sans-serif;
+  color: #1a1a1a;
+  line-height: 1.5;
+}
+/* Modal glass panel */
+.modal-reel-glass {
+  position: absolute;
+  left: 8px; right: 8px; top: 10px; bottom: 10px;
+  border-radius: 12px;
+  border: 1px solid rgba(255,255,255,0.30);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.35), 0 6px 30px rgba(0,0,0,0.35);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 32px 14px 16px;
+  text-align: center;
+}
+.modal-reel-glass::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0; height: 4px;
+  background: linear-gradient(90deg, transparent, #4d7c14, transparent);
+}
+.modal-glass-brand {
+  position: absolute;
+  top: 9px; left: 0; right: 0;
+  text-align: center;
+  font-size: 8px;
+  font-weight: 700;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  color: rgba(30,50,10,0.5);
+}
+.modal-glass-title {
+  font-size: 13px;
+  font-weight: 900;
+  text-transform: uppercase;
+  line-height: 1.25;
+  color: #1a1a1a;
+  margin-bottom: 7px;
+  font-family: 'Arial Black', sans-serif;
+}
+.modal-glass-divider {
+  width: 36px; height: 3px;
+  background: #4d7c14;
+  border-radius: 2px;
+  margin: 0 auto 9px;
+  flex-shrink: 0;
+}
+.modal-glass-sec-headline {
+  display: block;
+  font-size: 10.5px;
+  font-weight: 900;
+  text-transform: uppercase;
+  color: #4d7c14;
+  line-height: 1.3;
+  margin-top: 9px;
+  margin-bottom: 3px;
+  font-family: 'Arial Black', sans-serif;
+}
+.modal-glass-sec-body {
+  display: block;
+  font-size: 9px;
+  font-weight: 700;
+  font-family: Arial, sans-serif;
+  color: #1a1a1a;
+  line-height: 1.5;
+}
+.modal-glass-gap { height: 6px; flex-shrink: 0; }
+/* Slider controls */
+.reel-sliders {
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 10px;
+  padding: 12px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 10px;
+}
+.reel-slider-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.reel-slider-row label {
+  color: #aaa;
+  font-size: 11px;
+  font-family: sans-serif;
+  width: 130px;
+  flex-shrink: 0;
+}
+.reel-slider-row input[type=range] {
+  flex: 1;
+  accent-color: #8BC540;
+}
+.reel-slider-row span {
+  color: #8BC540;
+  font-size: 11px;
+  font-family: sans-serif;
+  width: 40px;
+  text-align: right;
+}
+
+  /* Modal overlay */
+  .modal-reel-wrap {
+    position: relative;
+    display: inline-block;
+    line-height: 0;
+    border-radius: 10px;
+    overflow: hidden;
+    background: #000;
+  }
+  .modal-reel-wrap video {
+    display: block;
+    max-height: 65vh;
+    max-width: min(85vw, 380px);
+    width: auto; height: auto;
+  }
+  .modal-reel-scrim {
+    position: absolute; inset: 0;
+    background: linear-gradient(to bottom, rgba(0,0,0,0.05) 0%, rgba(0,0,0,0.65) 18%, rgba(0,0,0,0.65) 92%, rgba(0,0,0,0.05) 100%);
+    pointer-events: none;
+    z-index: 1;
+  }
+  .modal-reel-brand {
+    position: absolute; top: 10px; left: 12px;
+    font-size: 9px; font-weight: 700; color: rgba(255,255,255,0.85);
+    text-shadow: 0 1px 3px rgba(0,0,0,0.8); pointer-events: none;
+    z-index: 2;
+  }
+  .modal-reel-text {
+    position: absolute; inset: 0;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    padding: 20px 12px; pointer-events: none; text-align: center;
+    overflow: hidden;
+    z-index: 2;
+  }
+  .modal-reel-text .reel-line { font-size: 8.5px; line-height: 1.4; }
+  .modal-reel-text .reel-line.headline { font-size: 10px; line-height: 1.3; font-weight: 900; }
+  .modal-reel-text .reel-scene-gap { height: 6px; flex-shrink: 0; }
+
+  /* CAROUSEL SLIDESHOW */
+  .slideshow {
+    position: relative;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .slideshow img {
+    height: 100%;
+    width: auto;
+    max-width: 100%;
+    object-fit: contain;
+    display: none;
+    background: #111;
+  }
+  .slideshow img.active { display: block; }
+  .slide-nav {
+    position: absolute;
+    bottom: 8px;
+    left: 0;
+    right: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    z-index: 10;
+  }
+  .slide-btn {
+    background: rgba(0,0,0,0.55);
+    color: #fff;
+    border: none;
+    border-radius: 50%;
+    width: 28px;
+    height: 28px;
+    font-size: 14px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.15s;
+  }
+  .slide-btn:hover { background: rgba(0,0,0,0.8); }
+  .slide-indicator {
+    background: rgba(0,0,0,0.55);
+    color: #fff;
+    border-radius: 10px;
+    padding: 2px 8px;
+    font-size: 11px;
+    font-weight: 700;
+  }
+
+  /* FORMAT BADGE */
+  .badge-row {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    display: flex;
+    gap: 6px;
+    z-index: 5;
+  }
+  .format-badge {
+    padding: 3px 9px;
+    border-radius: 12px;
+    font-size: 10px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: #fff;
+  }
+  .fmt-loop_reel { background: #3B82F6; }
+  .fmt-carousel { background: #8BC540; }
+  .fmt-single_image { background: #F97316; }
+
+  /* CARD BODY */
+  .card-body {
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    flex: 1;
+  }
+  .card-meta {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+  .scheduled-time {
+    font-size: 12px;
+    color: #888;
+    font-weight: 600;
+  }
+  .status-badge {
+    padding: 3px 10px;
+    border-radius: 12px;
+    font-size: 11px;
+    font-weight: 700;
+    white-space: nowrap;
+  }
+  .status-pending_approval { background: #fef9c3; color: #a16207; }
+  .status-approved { background: #dcfce7; color: #166534; }
+  .status-rejected { background: #fee2e2; color: #991b1b; }
+  .status-posted { background: #f3f4f6; color: #6b7280; }
+
+  .card-hook {
+    font-size: 15px;
+    font-weight: 800;
+    line-height: 1.3;
+    color: #111;
+  }
+  .scene-count {
+    font-size: 12px;
+    color: #8BC540;
+    font-weight: 700;
+  }
+  .caption-preview {
+    font-size: 13px;
+    color: #555;
+    line-height: 1.5;
+  }
+  .caption-more {
+    color: #8BC540;
+    font-weight: 600;
+    cursor: pointer;
+    font-size: 13px;
+    background: none;
+    border: none;
+    padding: 0;
+    font-family: inherit;
+  }
+  .caption-more:hover { text-decoration: underline; }
+
+  .feedback-textarea {
+    width: 100%;
+    min-height: 68px;
+    border: 1.5px solid #e5e5e5;
+    border-radius: 8px;
+    padding: 10px;
+    font-size: 13px;
+    font-family: 'Inter', sans-serif;
+    resize: vertical;
+    color: #333;
+    transition: border-color 0.15s;
+    outline: none;
+  }
+  .feedback-textarea:focus { border-color: #8BC540; }
+
+  .action-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+  .btn-approve, .btn-reject {
+    padding: 10px;
+    border: none;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    font-family: 'Inter', sans-serif;
+    transition: opacity 0.15s, transform 0.1s;
+  }
+  .btn-approve { background: #8BC540; color: #fff; }
+  .btn-approve:hover { opacity: 0.9; }
+  .btn-reject { background: #ef4444; color: #fff; }
+  .btn-reject:hover { opacity: 0.9; }
+  .btn-approve:active, .btn-reject:active { transform: scale(0.98); }
+
+  /* TOAST */
+  .toast {
+    position: fixed;
+    bottom: 28px;
+    right: 28px;
+    background: #111;
+    color: #fff;
+    border-radius: 8px;
+    padding: 10px 18px;
+    font-size: 13px;
+    font-weight: 600;
+    font-family: 'Inter', sans-serif;
+    z-index: 300;
+    opacity: 0;
+    transform: translateY(8px);
+    transition: opacity 0.2s, transform 0.2s;
+    pointer-events: none;
+  }
+  .toast.show { opacity: 1; transform: translateY(0); }
+
+  .card { cursor: pointer; }
+
+  /* MODAL */
+  .modal-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.7);
+    z-index: 500;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
+  }
+  .modal-backdrop.show { display: flex; }
+  .modal-panel {
+    background: #fff;
+    border-radius: 18px;
+    width: 100%;
+    max-width: 92vw;
+    max-height: 92vh;
+    position: relative;
+    box-shadow: 0 20px 80px rgba(0,0,0,0.4);
+    animation: modalIn 0.18s ease;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+  @keyframes modalIn { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+  .modal-close {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    border: none;
+    background: rgba(0,0,0,0.45);
+    color: #fff;
+    font-size: 20px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 20;
+    transition: background 0.15s;
+  }
+  .modal-close:hover { background: rgba(0,0,0,0.7); }
+
+  /* Modal content wrapper */
+  .modal-content {
+    flex: 1;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+  /* two-area body: media (left) + meta (right) */
+  .modal-body {
+    flex: 1;
+    min-height: 0;
+    display: grid;
+    grid-template-columns: minmax(0, 1.5fr) minmax(280px, 1fr);
+    gap: 0;
+  }
+
+  /* LEFT: media viewer */
+  .modal-media-area {
+    background: #0f0f10;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+    min-width: 0;
+    padding: 16px;
+    gap: 12px;
+  }
+  .modal-viewer {
+    flex: 1;
+    min-height: 0;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .modal-viewer img,
+  .modal-viewer video {
+    max-height: 70vh;
+    max-width: 100%;
+    width: auto;
+    object-fit: contain;
+    border-radius: 10px;
+    display: block;
+    background: #000;
+  }
+  .modal-viewer .scene-card {
+    max-height: 70vh;
+    overflow-y: auto;
+    width: 100%;
+    max-width: 420px;
+  }
+  .viewer-arrow {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: none;
+    background: rgba(255,255,255,0.9);
+    color: #111;
+    font-size: 18px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 5;
+    transition: background 0.15s, transform 0.1s;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+  }
+  .viewer-arrow:hover { background: #fff; }
+  .viewer-arrow:active { transform: translateY(-50%) scale(0.94); }
+  .viewer-arrow.prev { left: 8px; }
+  .viewer-arrow.next { right: 8px; }
+  .viewer-counter {
+    position: absolute;
+    bottom: 8px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(0,0,0,0.6);
+    color: #fff;
+    border-radius: 12px;
+    padding: 3px 12px;
+    font-size: 12px;
+    font-weight: 700;
+    z-index: 5;
+  }
+  /* thumbnail strip */
+  .modal-thumbs {
+    display: flex;
+    gap: 8px;
+    overflow-x: auto;
+    overflow-y: hidden;
+    flex-shrink: 0;
+    padding-bottom: 4px;
+  }
+  .modal-thumbs::-webkit-scrollbar { height: 6px; }
+  .modal-thumbs::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.25); border-radius: 3px; }
+  .modal-thumb {
+    height: 60px;
+    width: auto;
+    border-radius: 6px;
+    cursor: pointer;
+    flex-shrink: 0;
+    border: 2px solid transparent;
+    object-fit: cover;
+    opacity: 0.55;
+    transition: opacity 0.15s, border-color 0.15s;
+    background: #222;
+  }
+  .modal-thumb:hover { opacity: 0.85; }
+  .modal-thumb.active { opacity: 1; border-color: #8BC540; }
+  .modal-thumb-text {
+    height: 60px;
+    min-width: 60px;
+    max-width: 110px;
+    border-radius: 6px;
+    cursor: pointer;
+    flex-shrink: 0;
+    border: 2px solid #2a2a2a;
+    background: #1a1a1c;
+    color: #bbb;
+    font-size: 10px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 4px 6px;
+    overflow: hidden;
+    transition: border-color 0.15s, color 0.15s;
+  }
+  .modal-thumb-text.active { border-color: #8BC540; color: #fff; }
+
+  /* RIGHT: metadata sidebar */
+  .modal-meta {
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+    padding: 18px 22px 0;
+    overflow: hidden;
+  }
+  .modal-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-bottom: 12px;
+    padding-right: 36px;
+    flex-shrink: 0;
+  }
+  .modal-header .format-badge {
+    position: static;
+    background: #8BC540;
+  }
+  .modal-header .format-badge.fmt-loop_reel { background: #3B82F6; }
+  .modal-header .format-badge.fmt-carousel { background: #8BC540; }
+  .modal-header .format-badge.fmt-single_image { background: #F97316; }
+  .modal-time { font-size: 12px; color: #888; font-weight: 600; }
+  .modal-hook {
+    font-size: 19px;
+    font-weight: 900;
+    line-height: 1.22;
+    letter-spacing: -0.4px;
+    margin-bottom: 14px;
+    color: #111;
+    flex-shrink: 0;
+  }
+  .modal-section-label {
+    font-size: 10px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    color: #8BC540;
+    margin: 0 0 6px;
+    flex-shrink: 0;
+  }
+  /* caption gets its own scroll container so it never grows the layout */
+  .modal-caption {
+    font-size: 13.5px;
+    line-height: 1.55;
+    color: #222;
+    white-space: pre-wrap;
+    background: #fafafa;
+    border: 1.5px solid #eee;
+    border-radius: 10px;
+    padding: 12px 14px;
+    overflow-y: auto;
+    flex: 1;
+    min-height: 60px;
+    margin-bottom: 12px;
+  }
+  .scene-card {
+    border: 1.5px solid #e5e5e5;
+    border-radius: 12px;
+    padding: 16px 18px;
+    background: #fff;
+  }
+  .scene-card .scene-idx {
+    font-size: 11px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: #8BC540;
+    margin-bottom: 8px;
+    display: flex;
+    justify-content: space-between;
+  }
+  .scene-card .scene-text {
+    font-size: 16px;
+    font-weight: 700;
+    line-height: 1.45;
+    white-space: pre-wrap;
+    color: #111;
+  }
+  .scene-card .scene-sub {
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 1.5;
+    white-space: pre-wrap;
+    color: #555;
+    margin-top: 6px;
+  }
+
+  /* FOOTER bar: feedback + actions */
+  .modal-footer {
+    flex-shrink: 0;
+    border-top: 1px solid #ececec;
+    padding: 12px 22px 16px;
+    display: flex;
+    gap: 12px;
+    align-items: stretch;
+    background: #fff;
+  }
+  .modal-feedback {
+    flex: 1;
+    min-height: 44px;
+    max-height: 80px;
+    border: 1.5px solid #e5e5e5;
+    border-radius: 10px;
+    padding: 10px 12px;
+    font-size: 13px;
+    font-family: 'Inter', sans-serif;
+    resize: none;
+    color: #333;
+    outline: none;
+    transition: border-color 0.15s;
+  }
+  .modal-feedback:focus { border-color: #8BC540; }
+  .modal-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    flex-shrink: 0;
+  }
+  .modal-actions button {
+    padding: 10px 22px;
+    border: none;
+    border-radius: 10px;
+    font-size: 13px;
+    font-weight: 800;
+    cursor: pointer;
+    font-family: 'Inter', sans-serif;
+    transition: opacity 0.15s, transform 0.1s;
+    white-space: nowrap;
+  }
+  .modal-actions .btn-approve { background: #8BC540; color: #fff; }
+  .modal-actions .btn-reject { background: #ef4444; color: #fff; }
+  .modal-actions .btn-revise { background: #111; color: #fff; }
+  .modal-actions button:hover { opacity: 0.9; }
+  .modal-actions button:active { transform: scale(0.98); }
+
+  /* responsive: stack media over meta on narrow screens */
+  @media (max-width: 760px) {
+    .modal-body {
+      grid-template-columns: 1fr;
+      grid-template-rows: auto minmax(0, 1fr);
+      overflow-y: auto;
+    }
+    .modal-viewer img,
+    .modal-viewer video,
+    .modal-viewer .scene-card { max-height: 42vh; }
+    .modal-meta { padding: 16px 18px 0; overflow: visible; }
+    .modal-caption { flex: none; max-height: 22vh; }
+    .modal-footer { flex-wrap: wrap; padding: 12px 18px 14px; }
+    .modal-actions { flex-direction: row; width: 100%; }
+    .modal-actions button { flex: 1; }
+  }
+
+  /* LOADING STATE */
+  .loading-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 80px 32px;
+    gap: 16px;
+    color: #888;
+    font-size: 15px;
+    font-weight: 600;
+  }
+  .loading-spinner {
+    width: 32px;
+    height: 32px;
+    border: 3px solid #e5e5e5;
+    border-top-color: #8BC540;
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* IDEAS PANEL */
+  .ideas-panel { max-width: 680px; margin: 40px auto; padding: 0 32px; display: none; }
+  .ideas-panel.show { display: block; }
+  .ideas-form {
+    background: #fafafa;
+    border: 1.5px solid #e5e5e5;
+    border-radius: 16px;
+    padding: 28px;
+    margin-bottom: 28px;
+  }
+  .ideas-form h2 { font-size: 18px; font-weight: 800; margin-bottom: 4px; }
+  .ideas-form p { font-size: 14px; color: #888; margin-bottom: 20px; line-height: 1.5; }
+  .ideas-textarea {
+    width: 100%;
+    min-height: 96px;
+    border: 1.5px solid #e5e5e5;
+    border-radius: 10px;
+    padding: 14px;
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    resize: vertical;
+    outline: none;
+    transition: border-color 0.15s;
+    margin-bottom: 12px;
+    color: #111;
+  }
+  .ideas-textarea:focus { border-color: #8BC540; }
+  .ideas-row { display: flex; gap: 10px; align-items: center; }
+  .ideas-select {
+    flex: 1;
+    padding: 10px 14px;
+    border: 1.5px solid #e5e5e5;
+    border-radius: 8px;
+    font-family: 'Inter', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    background: #fff;
+    outline: none;
+    cursor: pointer;
+  }
+  .ideas-select:focus { border-color: #8BC540; }
+  .btn-submit-idea {
+    padding: 10px 22px;
+    background: #8BC540;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    font-family: 'Inter', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: opacity 0.15s;
+  }
+  .btn-submit-idea:hover { opacity: 0.88; }
+  .ideas-list-wrap h3 { font-size: 14px; font-weight: 700; color: #888; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 14px; }
+  .ideas-list { display: flex; flex-direction: column; gap: 10px; }
+  .idea-item {
+    border: 1.5px solid #e5e5e5;
+    border-radius: 12px;
+    padding: 16px 18px;
+    background: #fff;
+  }
+  .idea-item.idea-processed { opacity: 0.55; }
+  .idea-meta { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; flex-wrap: wrap; }
+  .idea-format {
+    font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;
+    background: #eef3e8; color: #4d7c14; padding: 3px 8px; border-radius: 20px;
+  }
+  .idea-status { font-size: 12px; font-weight: 600; color: #aaa; }
+  .idea-status.done { color: #22c55e; }
+  .idea-date { font-size: 12px; color: #ccc; margin-left: auto; }
+  .idea-text { font-size: 14px; line-height: 1.55; color: #333; }
+
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <div class="header-inner">
+    <div class="brand">
+      <div class="brand-accent"></div>
+      <div class="brand-text">
+        <h1>Florian John · KINDERFINANZEN</h1>
+        <p>Content-Freigabe</p>
+      </div>
+    </div>
+    <div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap;">
+      <div class="stats-bar" id="statsBar"></div>
+      <div class="header-actions">
+        <button class="btn-reload" id="btnReload">🔄 Neu laden</button>
+      </div>
+    </div>
+  </div>
+</header>
+
+<div class="filter-bar">
+  <div class="filter-inner" id="filterBar">
+    <button class="filter-pill active" data-filter="all">Alle</button>
+    <button class="filter-pill" data-filter="pending_approval">Ausstehend</button>
+    <button class="filter-pill" data-filter="approved">Inhalt ✓</button>
+    <button class="filter-pill" data-filter="images_pending_approval">🖼 Bilder prüfen</button>
+    <button class="filter-pill" data-filter="images_approved">Bereit</button>
+    <button class="filter-pill" data-filter="rejected">Abgelehnt</button>
+    <button class="filter-pill" data-filter="posted">Gepostet</button>
+    <button class="filter-pill" data-filter="ideas" style="margin-left:auto">💡 Ideen</button>
+  </div>
+</div>
+
+<main class="main">
+  <div id="loadingState" class="loading-state">
+    <div class="loading-spinner"></div>
+    <span>Lade Postings…</span>
+  </div>
+  <div class="grid" id="grid" style="display:none;"></div>
+  <div class="ideas-panel" id="ideasPanel">
+    <div class="ideas-form">
+      <h2>💡 Idee einreichen</h2>
+      <p>Schreib deine Idee — das System generiert beim nächsten Generierungslauf (täglich 04:00 CEST) automatisch einen Instagram-Post zur Freigabe.</p>
+      <textarea class="ideas-textarea" id="ideaText" placeholder="z.B. Vergleich ETF-Depot vs. Sparbuch über 18 Jahre für ein Kind…"></textarea>
+      <div class="ideas-row">
+        <select class="ideas-select" id="ideaFormat">
+          <option value="auto">Format: Automatisch</option>
+          <option value="carousel">Karussell (Slides)</option>
+          <option value="loop_reel">Loop-Reel (Video)</option>
+        </select>
+        <button class="btn-submit-idea" id="btnSubmitIdea">Einreichen →</button>
+      </div>
+    </div>
+    <div class="ideas-list-wrap">
+      <h3>Eingereichte Ideen</h3>
+      <div class="ideas-list" id="ideasList">
+        <p style="color:#bbb;font-size:14px">Noch keine Ideen eingereicht.</p>
+      </div>
+    </div>
+  </div>
+</main>
+
+<div class="toast" id="toast">✓ Gespeichert</div>
+
+<div class="modal-backdrop" id="modalBackdrop">
+  <div class="modal-panel" id="modalPanel">
+    <button class="modal-close" id="modalClose" aria-label="Schliessen">&times;</button>
+    <div class="modal-content" id="modalContent"></div>
+  </div>
+</div>
+
+<script>
+// QUEUE_START
+const EMBEDDED_QUEUE = [
+  {
+    "id": "w02-mo-morning",
+    "scheduledFor": "2026-06-22T05:00:00Z",
+    "format": "loop_reel",
+    "status": "posted",
+    "hook": "DAS FINANZAMT HOFFT DASS DU DAS NIE ERF\u00c4HRST",
+    "caption": "Das Finanzamt hofft, dass du das nie erf\u00e4hrst: Kinderkonto mit Sparerpauschbetrag 1.000 \u20ac, Kinderfreibetrag 9.312 \u20ac und Betreuungskosten zu 2/3 absetzbar \u2014 plus 300 \u20ac Riester-Kinderzulage pro Jahr. Ich bin Florian, unabh\u00e4ngiger Finanzberater f\u00fcr Kinderfinanzen. Schreib mir \u2014 wir schauen gemeinsam, was du heute noch optimieren kannst. Link in Bio. #Kinderfinanzen #Steuertricks #Kinderfreibetrag #Finanzberater #Familiefinanzen",
+    "platform": "instagram",
+    "broll_url": "https://d8j0ntlcm91z4.cloudfront.net/user_36k97Z8kXcnbegP7zyOt6RJ0mbh/hf_20260619_063341_91fe4dbe-5767-4201-b353-98c55f599cf2.mp4",
+    "video_url": "https://d8j0ntlcm91z4.cloudfront.net/user_36k97Z8kXcnbegP7zyOt6RJ0mbh/hf_20260619_063341_91fe4dbe-5767-4201-b353-98c55f599cf2.mp4",
+    "panel_opacity": 0.56,
+    "panel_blur": 4,
+    "panel_text_dark": true,
+    "loop_scenes": [
+      {
+        "headline": "SPARERPAUSCHBETRAG F\u00dcR DEIN KIND",
+        "body": "Jedes Kind hat 1.000 \u20ac Sparerpauschbetrag/Jahr. Zinsen, Dividenden, ETF-Ertr\u00e4ge bis 1.000 \u20ac komplett steuerfrei. Die meisten Eltern lassen das einfach liegen.",
+        "dur": 9
+      },
+      {
+        "headline": "KINDERFREIBETRAG 9.312 \u20ac",
+        "body": "Pro Kind und Jahr 9.312 \u20ac Freibetrag \u2014 auf Antrag. Viele Familien nehmen ihn nicht, weil sie nicht wissen, dass er m\u00f6glich ist.",
+        "dur": 10
+      },
+      {
+        "headline": "BETREUUNGSKOSTEN ABSETZEN",
+        "body": "Kita, Tagesmutter, Hort: 2/3 der Kosten bis 4.000 \u20ac/Jahr absetzbar. Bei 6.000 \u20ac Betreuung = 4.000 \u20ac Steuerersparnis im Jahr.",
+        "dur": 9
+      },
+      {
+        "headline": "RIESTER-KINDERZULAGE",
+        "body": "300 \u20ac Zulage pro Kind und Jahr \u2014 vom Staat. Bei 2 Kindern 600 \u20ac extra. Das Finanzamt schickt dir dieses Geld nicht von alleine.",
+        "dur": 10
+      }
+    ],
+    "approvedAt": "2026-06-22T06:24:41.357238+00:00",
+    "repostNote": "38s reel deleted manually \u2014 re-rendering as \u22648s",
+    "postedAt": "2026-06-22T12:00:52.322Z",
+    "ig_post_id": "18098106551247515"
+  },
+  {
+    "id": "w02-mo-midday",
+    "scheduledFor": "2026-06-22T10:30:00Z",
+    "format": "carousel",
+    "status": "posted",
+    "hook": "5 Steuer-Tricks f\u00fcr Eltern, die kaum jemand kennt",
+    "caption": "Kinderbetreuung absetzen, Kinderfreibetrag nutzen, Depot auf Kindesnamen, Riester-Zulage einfordern, Ausbildungsfreibetrag \u2014 5 Tricks die dir bares Geld sparen. Ich erkl\u00e4re dir jeden davon in einem kostenlosen Gespr\u00e4ch. Link in Bio. #Steuertricks #Kinderfinanzen #Familiensteuern #Finanzberater #Steuersparen",
+    "platform": "instagram",
+    "asset_urls": [
+      "https://d8j0ntlcm91z4.cloudfront.net/user_36k97Z8kXcnbegP7zyOt6RJ0mbh/hf_20260622_071146_478d71c2-ebcb-46f9-be95-4f649a3bb01c.png",
+      "https://d8j0ntlcm91z4.cloudfront.net/user_36k97Z8kXcnbegP7zyOt6RJ0mbh/hf_20260622_071154_306d1aaf-8162-4526-8e29-2bc3450045c4.png",
+      "https://d8j0ntlcm91z4.cloudfront.net/user_36k97Z8kXcnbegP7zyOt6RJ0mbh/hf_20260622_071202_0322a1b9-8137-4e9b-b8db-3b7630d9fd43.png",
+      "https://d8j0ntlcm91z4.cloudfront.net/user_36k97Z8kXcnbegP7zyOt6RJ0mbh/hf_20260622_071209_1d74825e-c951-4043-a6d1-3e0fab662cfd.png",
+      "https://d8j0ntlcm91z4.cloudfront.net/user_36k97Z8kXcnbegP7zyOt6RJ0mbh/hf_20260622_071216_cef39e78-d3a8-4c3d-b0b2-18971c061b8e.png",
+      "https://d8j0ntlcm91z4.cloudfront.net/user_36k97Z8kXcnbegP7zyOt6RJ0mbh/hf_20260622_071222_86126744-f554-49d0-9999-1455210d2e30.png",
+      "https://d8j0ntlcm91z4.cloudfront.net/user_36k97Z8kXcnbegP7zyOt6RJ0mbh/hf_20260622_071229_099db38a-4eff-4915-84d7-b6854cc34ae2.png",
+      "https://d8j0ntlcm91z4.cloudfront.net/user_36k97Z8kXcnbegP7zyOt6RJ0mbh/hf_20260622_071235_8aaa9d42-14fc-4a2e-8a85-caf897c5653a.png",
+      "https://d8j0ntlcm91z4.cloudfront.net/user_36k97Z8kXcnbegP7zyOt6RJ0mbh/hf_20260622_071551_b958ab8b-31ab-4ec7-a6fb-1ca19691eaa1.png",
+      "https://d8j0ntlcm91z4.cloudfront.net/user_36k97Z8kXcnbegP7zyOt6RJ0mbh/hf_20260622_071556_9341930e-759a-4e3a-aaf4-bde5b885c410.png"
+    ],
+    "slides": [
+      {
+        "headline": "DER STAAT ZAHLT 67 %",
+        "subtext": "Hast du Kinder unter 14 Jahren in Kita, Hort oder bei der Tagesmutter? Das Finanzamt zahlt 2/3 deiner Kosten. Die meisten Eltern wissen das nicht.",
+        "style": "hook"
+      },
+      {
+        "headline": "KINDERBETREUUNG ABSETZEN",
+        "subtext": "Kita, Hort, Tagesmutter: 2/3 deiner Kosten bis max. 4.000 \u20ac/Jahr absetzbar. Bei 6.000 \u20ac Kita-Kosten = 4.000 \u20ac Steuerersparnis. Pro Kind. J\u00e4hrlich.",
+        "style": "liste"
+      },
+      {
+        "headline": "DEPOT AUF KINDESNAMEN",
+        "subtext": "Jedes Kind hat 1.000 \u20ac Sparerpauschbetrag/Jahr. Zinsen, ETF-Dividenden bis 1.000 \u20ac = 0 Steuern. Bei 2 Kindern: 2.000 \u20ac steuerbeg\u00fcnstigte Kapitalertr\u00e4ge j\u00e4hrlich.",
+        "style": "vergleich"
+      },
+      {
+        "headline": "KINDERFREIBETRAG 9.312 \u20ac",
+        "subtext": "Pro Kind und Jahr 9.312 \u20ac Freibetrag \u2014 auf Antrag beim Finanzamt. Viele Familien kennen ihn nicht. Das Finanzamt schickt ihn nicht von alleine.",
+        "style": "schock"
+      },
+      {
+        "headline": "RIESTER-KINDERZULAGE",
+        "subtext": "300 \u20ac Zulage vom Staat pro Kind und Jahr. Bei 2 Kindern: 600 \u20ac j\u00e4hrlich extra in deine Altersvorsorge. Automatisch \u2014 wenn du sie beantragst.",
+        "style": "liste"
+      },
+      {
+        "headline": "AUSBILDUNGSFREIBETRAG",
+        "subtext": "Studiert oder in Ausbildung dein Kind ausw\u00e4rts? 1.200 \u20ac Freibetrag j\u00e4hrlich absetzbar \u2014 einfach in die Steuererkl\u00e4rung eintragen. Gilt ab dem 18. Geburtstag.",
+        "style": "liste"
+      },
+      {
+        "headline": "WAS KOSTET NICHTS-TUN?",
+        "subtext": "Ein Kind, 18 Jahre, 100 \u20ac/Monat gespart: 21.600 \u20ac. Dasselbe in einem ETF-Depot mit historisch 7 % p.a.: 40.800 \u20ac. Der Unterschied: 19.200 \u20ac. Wegen Unwissen.",
+        "style": "schock"
+      },
+      {
+        "headline": "DER EINFACHE ERSTE SCHRITT",
+        "subtext": "1. Depot auf Kindesnamen er\u00f6ffnen. 2. Freistellungsauftrag 1.000 \u20ac einrichten. 3. Kinderbetreuungskosten eintragen. 4. Kinderfreibetrag beantragen. Alles: unter 2 Stunden.",
+        "style": "liste"
+      },
+      {
+        "headline": "WER FR\u00dcH PLANT GEWINNT",
+        "subtext": "Eltern die diese 5 Vorteile nutzen, bauen bis zur Vollj\u00e4hrigkeit des Kindes durchschnittlich 47.000 \u20ac mehr Verm\u00f6gen auf \u2014 bei gleichem Einkommen.",
+        "style": "climax"
+      },
+      {
+        "headline": "BEREIT F\u00dcR DEINEN STEUER-VORTEIL?",
+        "subtext": "15 Min. KOSTENLOS STARTEN \u00b7 Anbieterungebunden \u00b7 Keine Verpflichtung",
+        "style": "cta"
+      }
+    ],
+    "imagesGeneratedAt": "2026-06-22T07:20:00.000Z",
+    "approvedAt": "2026-06-22T06:25:52.950Z",
+    "imagesApprovedAt": "2026-06-22T18:48:28.507Z",
+    "postedAt": "2026-06-22T18:51:18.487Z",
+    "ig_post_id": "18323388601279345"
+  },
+  {
+    "id": "w02-mo-evening",
+    "scheduledFor": "2026-06-22T16:00:00Z",
+    "format": "loop_reel",
+    "status": "posted",
+    "hook": "WAS DU F\u00dcR DEIN KIND ABSETZEN KANNST",
+    "caption": "Kinderbetreuung bis 4.000 \u20ac/Jahr absetzen, Ausbildungsfreibetrag 1.200 \u20ac, Schulgeld zu 30% und Riester-Kinderzulage 300 \u20ac/Kind \u2014 das sind echte Steuervorteile, die du heute nutzen kannst. Ich zeige dir in 15 Minuten, wie du das auf deine Situation anwendest. Link in Bio. #Steuertipps #Kinderbetreuung #Familiensteuern #Kinderfreibetrag #Finanzberater",
+    "platform": "instagram",
+    "broll_url": "https://d8j0ntlcm91z4.cloudfront.net/user_36k97Z8kXcnbegP7zyOt6RJ0mbh/hf_20260619_061130_1d3762f4-0706-4ca1-b8a2-123d009eacb2.mp4",
+    "video_url": "https://d8j0ntlcm91z4.cloudfront.net/user_36k97Z8kXcnbegP7zyOt6RJ0mbh/hf_20260619_061130_1d3762f4-0706-4ca1-b8a2-123d009eacb2.mp4",
+    "panel_opacity": 0.56,
+    "panel_blur": 4,
+    "panel_text_dark": true,
+    "loop_scenes": [
+      {
+        "headline": "KINDERBETREUUNG: 4.000 \u20ac ABSETZEN",
+        "body": "2/3 der Betreuungskosten absetzbar, max. 4.000 \u20ac/Jahr und Kind. Kita, Tagesmutter, Hort \u2014 alles z\u00e4hlt. Bei 3 Kindern bis zu 12.000 \u20ac Abzug.",
+        "dur": 9
+      },
+      {
+        "headline": "AUSBILDUNGSFREIBETRAG 1.200 \u20ac",
+        "body": "Wenn dein Kind ausw\u00e4rts studiert oder in Ausbildung ist: 1.200 \u20ac Freibetrag pro Jahr. Einfach in der Steuererkl\u00e4rung eintragen.",
+        "dur": 10
+      },
+      {
+        "headline": "SCHULGELD 30% ABSETZEN",
+        "body": "Private Schule? 30% des Schulgeldes absetzbar \u2014 max. 5.000 \u20ac/Jahr. Viele Eltern kennen diese M\u00f6glichkeit nicht.",
+        "dur": 9
+      },
+      {
+        "headline": "RIESTER F\u00dcR KINDER",
+        "body": "300 \u20ac Zulage vom Staat pro Kind und Jahr. Mindestbeitrag einhalten und das Geld kommt automatisch. Bei 2 Kindern 600 \u20ac extra.",
+        "dur": 10
+      }
+    ],
+    "approvedAt": "2026-06-22T18:48:31.121Z",
+    "postedAt": "2026-06-22T18:52:33.571Z",
+    "ig_post_id": "18107097085806836"
+  },
+  {
+    "id": "w02-di-morning",
+    "scheduledFor": "2026-06-23T05:00:00Z",
+    "format": "loop_reel",
+    "status": "pending_approval",
+    "hook": "DAS MUSST DU IM ERSTEN BABYJAHR ERLEDIGEN",
+    "caption": "Geburtsurkunde sofort beantragen, Krankenkasse innerhalb von 2 Monaten anmelden, Kindergeld \u2014 Frist 6 Monate \u2014 und Jahresende Steuerfreibetrag sichern. Diese Fristen kosten dich Tausende, wenn du sie verpasst. Ich helfe dir, alles in der richtigen Reihenfolge zu erledigen. Link in Bio. #Erstkindjahr #Kindergeld #Elternzeit #Finanzberater #Familiefinanzen",
+    "platform": "instagram",
+    "broll_url": "https://d8j0ntlcm91z4.cloudfront.net/user_36k97Z8kXcnbegP7zyOt6RJ0mbh/hf_20260619_063342_04b0f7af-5196-43e1-8119-4dda79db34ae.mp4",
+    "video_url": "https://d8j0ntlcm91z4.cloudfront.net/user_36k97Z8kXcnbegP7zyOt6RJ0mbh/hf_20260619_063342_04b0f7af-5196-43e1-8119-4dda79db34ae.mp4",
+    "panel_opacity": 0.56,
+    "panel_blur": 4,
+    "panel_text_dark": true,
+    "loop_scenes": [
+      {
+        "headline": "GEBURTSURKUNDE: SOFORT",
+        "body": "Ohne Geburtsurkunde geht nichts. Standesamt meist innerhalb von 1 Woche. Dann: Elterngeld-Antrag, Kindergeld, Krankenkasse \u2014 alles h\u00e4ngt daran.",
+        "dur": 9
+      },
+      {
+        "headline": "KRANKENKASSE: 2 MONATE FRIST",
+        "body": "Dein Kind muss innerhalb von 2 Monaten nach Geburt bei einer Krankenkasse angemeldet sein. Danach drohen Nachzahlungen.",
+        "dur": 10
+      },
+      {
+        "headline": "KINDERGELD: 6 MONATE R\u00dcCKWIRKEND",
+        "body": "259 \u20ac/Monat \u2014 aber nur 6 Monate r\u00fcckwirkend! Wer zu sp\u00e4t beantragt verliert Geld. Antrag sofort nach Geburtsurkunde stellen.",
+        "dur": 9
+      },
+      {
+        "headline": "STEUERFREIBETRAG JAHRESENDE",
+        "body": "Im Geburtsjahr noch Steuerfreibetrag f\u00fcr dein Kind sichern. Selbst wenn Kind im Dezember geboren: voller Kinderfreibetrag f\u00fcr das ganze Jahr.",
+        "dur": 10
+      }
+    ]
+  },
+  {
+    "id": "w02-di-midday",
+    "scheduledFor": "2026-06-23T10:30:00Z",
+    "format": "carousel",
+    "status": "pending_approval",
+    "hook": "Dein Kind wird 18 \u2014 hast du WIRKLICH genug gespart?",
+    "caption": "F\u00fchrerschein 3.500 \u20ac, erste Wohnung 5.000 \u20ac, Studium 40.000 \u20ac. Bist du auf Kurs? Ich zeige dir in 15 Minuten, wie du heute noch gegensteuern kannst. Link in Bio. #Sparplan #ETFSparplan #Kinderfinanzen #Finanzberater #Zukunftsplanung",
+    "platform": "instagram",
+    "asset_urls": [],
+    "slides": [
+      {
+        "text": "Reality Check: F\u00fchrerschein 3.500 \u20ac + erste Wohnung 5.000 \u20ac + Studium 40.000 \u20ac = 50.000 \u20ac+"
+      },
+      {
+        "text": "50 \u20ac/Mon ETF-Sparplan ab Geburt = 21.380 \u20ac mit 18. Bist du auf Kurs?"
+      },
+      {
+        "text": "100 \u20ac/Mon = 43.000 \u20ac. Heute noch einrichten \u2014 jeder Monat z\u00e4hlt."
+      }
+    ]
+  },
+  {
+    "id": "w02-di-evening",
+    "scheduledFor": "2026-06-23T16:00:00Z",
+    "format": "loop_reel",
+    "status": "pending_approval",
+    "hook": "KINDERVERSICHERUNGEN DIE SICH NICHT LOHNEN",
+    "caption": "Ausbildungsversicherungen mit unter 2% Rendite klingen sicher \u2014 bringen aber kaum etwas. 50 \u20ac/Monat im ETF-Sparplan ergeben nach 18 Jahren historisch deutlich mehr. Lass dich nicht von Provisionsinteressen leiten. Ich erkl\u00e4re dir, was wirklich sinnvoll ist. Link in Bio. #Kinderversicherung #ETFSparplan #Kinderfinanzen #Finanzberater #Familiensteuern",
+    "platform": "instagram",
+    "broll_url": "https://d8j0ntlcm91z4.cloudfront.net/user_36k97Z8kXcnbegP7zyOt6RJ0mbh/hf_20260619_061133_15ff418f-046c-4a37-8fcb-ace76121c34d.mp4",
+    "video_url": "https://d8j0ntlcm91z4.cloudfront.net/user_36k97Z8kXcnbegP7zyOt6RJ0mbh/hf_20260619_061133_15ff418f-046c-4a37-8fcb-ace76121c34d.mp4",
+    "panel_opacity": 0.56,
+    "panel_blur": 4,
+    "panel_text_dark": true,
+    "loop_scenes": [
+      {
+        "headline": "AUSBILDUNGSVERSICHERUNG: FINGER WEG",
+        "body": "Rendite oft unter 2%. 50 \u20ac/Monat \u00d7 18 Jahre: Einzahlung 10.800 \u20ac, Auszahlung ca. 12.000 \u20ac. Im ETF-Sparplan: 21.380 \u20ac. Der Unterschied ist 9.380 \u20ac.",
+        "dur": 9
+      },
+      {
+        "headline": "WAS DU WIRKLICH BRAUCHST",
+        "body": "Privathaftpflicht f\u00fcr die Familie (inkl. Kind). Berufsunf\u00e4higkeitsversicherung f\u00fcr DICH als Elternteil. Mehr braucht es meistens nicht.",
+        "dur": 9
+      },
+      {
+        "headline": "DER ETF-VERGLEICH",
+        "body": "50 \u20ac/Monat \u00d7 18 Jahre: Ausbildungsversicherung \u2248 12.000 \u20ac. ETF-Sparplan (hist. 7%) \u2248 21.380 \u20ac. Kein Risiko, keine Provision, volle Transparenz.",
+        "dur": 10
+      }
+    ]
+  },
+  {
+    "id": "w02-mi-morning",
+    "scheduledFor": "2026-06-24T05:00:00Z",
+    "format": "loop_reel",
+    "status": "pending_approval",
+    "hook": "SO NIMMST DU DEINEM KIND DIE FINANZIELLEN SORGEN",
+    "caption": "Kindergeld aufteilen und direkt in den ETF-Sparplan investieren. 100 \u20ac/Monat \u00d7 18 Jahre ergeben 43.000 \u20ac \u2014 Familie A macht nichts, Familie B macht genau das. Der Unterschied mit 18: 54.000 \u20ac Gesamtkapital vs. 0 \u20ac. Starte heute. Link in Bio. #Kindergeld #Sparplan #ETF #Kinderfinanzen #Finanzberater",
+    "platform": "instagram",
+    "broll_url": "https://d8j0ntlcm91z4.cloudfront.net/user_36k97Z8kXcnbegP7zyOt6RJ0mbh/hf_20260619_061134_a872e657-ecb6-49aa-b3e6-183a1cc784b6.mp4",
+    "video_url": "https://d8j0ntlcm91z4.cloudfront.net/user_36k97Z8kXcnbegP7zyOt6RJ0mbh/hf_20260619_061134_a872e657-ecb6-49aa-b3e6-183a1cc784b6.mp4",
+    "panel_opacity": 0.56,
+    "panel_blur": 4,
+    "panel_text_dark": true,
+    "loop_scenes": [
+      {
+        "headline": "FAMILIE A vs FAMILIE B",
+        "body": "Familie A: Kindergeld kommt, Kindergeld geht. Familie B: 100 \u20ac/Monat direkt per Dauerauftrag auf Kindeskonto + ETF-Sparplan. Beide verdienen gleich.",
+        "dur": 9
+      },
+      {
+        "headline": "100 \u20ac / MONAT \u00d7 18 JAHRE",
+        "body": "Historische ETF-Rendite ~7% p.a. Ergebnis mit 18: 43.000 \u20ac. F\u00fchrerschein, Wohnung, Studium \u2014 einfach finanziert.",
+        "dur": 10
+      },
+      {
+        "headline": "GESAMTBETRAG: 54.000 \u20ac",
+        "body": "Kindergeld allein: 259 \u20ac/Mon \u00d7 18 Jahre = 55.944 \u20ac. Gut angelegt: daraus werden 54.000 \u20ac Kapital f\u00fcr dein Kind. Schlecht angelegt: 0 \u20ac.",
+        "dur": 9
+      },
+      {
+        "headline": "STARTE HEUTE",
+        "body": "Nicht morgen. Nicht wenn das Depot eingerichtet ist. Heute. Jeder Monat fr\u00fcher kostet dein Kind Kapital mit 18.",
+        "dur": 10
+      }
+    ]
+  },
+  {
+    "id": "w02-mi-midday",
+    "scheduledFor": "2026-06-24T10:30:00Z",
+    "format": "carousel",
+    "status": "pending_approval",
+    "hook": "Elterngeld optimal nutzen: Die 4 h\u00e4ufigsten Fehler",
+    "caption": "Zu sp\u00e4t beantragen, Partnerschaftsbonus verpassen, Elterngeld Plus ignorieren, falsche Monate w\u00e4hlen \u2014 diese 4 Fehler kosten Familien tausende Euro. Ich rechne das gerne f\u00fcr euch durch. Link in Bio. #Elterngeld #Familiefinanzen #Finanzberater #ElterngeldPlus #Erstkindjahr",
+    "platform": "instagram",
+    "asset_urls": [],
+    "slides": [
+      {
+        "text": "Fehler 1: Zu sp\u00e4t beantragen \u2014 Elterngeld wird nur 3 Monate r\u00fcckwirkend gezahlt!"
+      },
+      {
+        "text": "Fehler 2: Partnerschaftsbonus verpassen \u2014 4 Extra-Monate bei gleichzeitiger Teilzeit"
+      },
+      {
+        "text": "Fehler 3: Elterngeld Plus nicht gepr\u00fcft \u2014 kann bei Teilzeitarbeit besser sein als Normal-Elterngeld"
+      }
+    ]
+  },
+  {
+    "id": "w02-mi-evening",
+    "scheduledFor": "2026-06-24T16:00:00Z",
+    "format": "loop_reel",
+    "status": "pending_approval",
+    "hook": "DIE BAF\u00d6G-FALLE \u2014 SO VERLIERT DEIN KIND TAUSENDE",
+    "caption": "BAf\u00f6G-Grenze: 15.000 \u20ac Verm\u00f6gen. Steht das Depot auf dem Namen deines Kindes und \u00fcberschreitet diese Grenze, verliert es den BAf\u00f6G-Anspruch. L\u00f6sung: Depot vorerst auf Elternname lassen. Ich erkl\u00e4re die Details in einem kurzen Gespr\u00e4ch. Link in Bio. #BAf\u00f6G #Kinderdepot #Studium #Finanzberater #Kinderfinanzen",
+    "platform": "instagram",
+    "broll_url": "https://d8j0ntlcm91z4.cloudfront.net/user_36k97Z8kXcnbegP7zyOt6RJ0mbh/hf_20260619_062023_6e32e4a6-55f2-4dc8-aea6-e6bdb8f75f2e.mp4",
+    "video_url": "https://d8j0ntlcm91z4.cloudfront.net/user_36k97Z8kXcnbegP7zyOt6RJ0mbh/hf_20260619_062023_6e32e4a6-55f2-4dc8-aea6-e6bdb8f75f2e.mp4",
+    "panel_opacity": 0.56,
+    "panel_blur": 4,
+    "panel_text_dark": true,
+    "loop_scenes": [
+      {
+        "headline": "DIE BAF\u00d6G-VERM\u00d6GENSGRENZE",
+        "body": "Studenten d\u00fcrfen max. 15.000 \u20ac Verm\u00f6gen haben. Dar\u00fcber: kein BAf\u00f6G. Wer mit 18 ein volles Depot hat, zahlt das Studium selbst.",
+        "dur": 9
+      },
+      {
+        "headline": "DAS KINDERDEPOT ALS FALLE",
+        "body": "Depot auf Kindesnamen: gut f\u00fcr Steuer, schlecht f\u00fcr BAf\u00f6G. Mit 43.000 \u20ac auf dem Depot ist BAf\u00f6G komplett weg. Verlust: bis zu 400 \u20ac/Monat.",
+        "dur": 10
+      },
+      {
+        "headline": "DIE L\u00d6SUNG",
+        "body": "Depot auf Elternname lassen bis kurz vor Studienende. Dann \u00fcbertragen. Alternativ: gut planen, wann Verm\u00f6gen unter 15.000 \u20ac f\u00e4llt.",
+        "dur": 9
+      },
+      {
+        "headline": "FR\u00dcHZEITIG PLANEN",
+        "body": "Diese Entscheidung triffst du nicht mit 17 \u2014 die triffst du heute. Die Depotstruktur entscheidet \u00fcber BAf\u00f6G-Anspruch und Steuervorteil.",
+        "dur": 10
+      }
+    ]
+  },
+  {
+    "id": "w02-do-morning",
+    "scheduledFor": "2026-06-25T05:00:00Z",
+    "format": "loop_reel",
+    "status": "pending_approval",
+    "hook": "DIESE 3 FEHLER KOSTEN DEIN KIND 20.000 \u20ac",
+    "caption": "Depot auf Elternname statt Kindesnamen: Sparerpauschbetrag verloren. Sparbuch statt ETF: 10.000 \u20ac weniger. Falsche Versicherung statt Sparplan: nochmal 9.000 \u20ac weg. Zusammen leicht 20.000 \u20ac Verlust. Ich helfe dir, das zu vermeiden. Link in Bio. #Kinderfinanzen #Sparplan #ETF #Finanzberater #Steuerfehler",
+    "platform": "instagram",
+    "broll_url": "https://d8j0ntlcm91z4.cloudfront.net/user_36k97Z8kXcnbegP7zyOt6RJ0mbh/hf_20260619_061135_8dc69951-1578-417f-8446-0a68940c9c11.mp4",
+    "video_url": "https://d8j0ntlcm91z4.cloudfront.net/user_36k97Z8kXcnbegP7zyOt6RJ0mbh/hf_20260619_061135_8dc69951-1578-417f-8446-0a68940c9c11.mp4",
+    "panel_opacity": 0.56,
+    "panel_blur": 4,
+    "panel_text_dark": true,
+    "loop_scenes": [
+      {
+        "headline": "FEHLER 1: DEPOT AUF ELTERNNAME",
+        "body": "1.000 \u20ac Sparerpauschbetrag/Jahr, 18 Jahre = 18.000 \u20ac steuerfrei \u2014 aber nur wenn das Depot auf dem Kindesnamen ist. Auf Elternname: 0 \u20ac Freibetrag.",
+        "dur": 9
+      },
+      {
+        "headline": "FEHLER 2: SPARBUCH STATT ETF",
+        "body": "50 \u20ac/Mon \u00d7 18 Jahre: Sparbuch (0,5%) = 11.120 \u20ac. ETF (7%) = 21.380 \u20ac. Differenz: 10.260 \u20ac. Gleicher Aufwand, ganz anderes Ergebnis.",
+        "dur": 10
+      },
+      {
+        "headline": "FEHLER 3: FALSCHE VERSICHERUNG",
+        "body": "Ausbildungsversicherung statt ETF kostet 9.380 \u20ac \u00fcber 18 Jahre. Provision f\u00fcr den Berater, Verlust f\u00fcr dein Kind.",
+        "dur": 9
+      },
+      {
+        "headline": "WAS DU HEUTE TUN KANNST",
+        "body": "Depot auf Kindesnamen er\u00f6ffnen. ETF-Sparplan einrichten. Ausbildungsversicherung k\u00fcndigen (pr\u00fcfen lassen). Drei Schritte, potenziell 20.000 \u20ac Unterschied.",
+        "dur": 10
+      }
+    ]
+  },
+  {
+    "id": "w02-do-midday",
+    "scheduledFor": "2026-06-25T10:30:00Z",
+    "format": "carousel",
+    "status": "pending_approval",
+    "hook": "Kinderdepot vs Sparbuch: Der Vergleich nach 18 Jahren",
+    "caption": "50 \u20ac/Monat \u00d7 18 Jahre: Sparbuch = 11.120 \u20ac. ETF-Depot = 21.380 \u20ac. Gleicher Aufwand. Fast doppeltes Ergebnis. Die Entscheidung triffst du heute. Link in Bio. #Kinderdepot #Sparbuch #ETF #Kinderfinanzen #Finanzberater",
+    "platform": "instagram",
+    "asset_urls": [],
+    "slides": [
+      {
+        "text": "Sparbuch: 50 \u20ac/Mon \u00d7 18 Jahre \u00d7 0,5% = 11.120 \u20ac \u2014 reicht kaum f\u00fcr F\u00fchrerschein + erste Wohnung"
+      },
+      {
+        "text": "ETF-Depot: gleiche 50 \u20ac/Mon \u00d7 18 Jahre \u00d7 7% = 21.380 \u20ac \u2014 ein echter Start ins Erwachsenenleben"
+      },
+      {
+        "text": "Unterschied: 10.260 \u20ac \u2014 bei GLEICHEM monatlichem Einsatz. Die Entscheidung liegt bei dir."
+      }
+    ]
+  },
+  {
+    "id": "w02-do-evening",
+    "scheduledFor": "2026-06-25T16:00:00Z",
+    "format": "loop_reel",
+    "status": "pending_approval",
+    "hook": "WARUM DAS KINDESKONTO AUF DEN KINDESNAMEN MUSS",
+    "caption": "Depot auf Kindesnamen: 1.000 \u20ac Sparerpauschbetrag pro Jahr, \u00fcber 18 Jahre sind das 18.000 \u20ac steuerfrei. Depot auf Elternname: 0 \u20ac. Diese eine Entscheidung macht den Unterschied. Ich erkl\u00e4re dir in 15 Minuten, wie du das richtig aufstellst. Link in Bio. #Kindeskonto #Depot #Sparerpauschbetrag #Kinderfinanzen #Finanzberater",
+    "platform": "instagram",
+    "broll_url": "https://d8j0ntlcm91z4.cloudfront.net/user_36k97Z8kXcnbegP7zyOt6RJ0mbh/hf_20260619_062022_905f7883-3958-40fb-90fd-f5de43c224e4.mp4",
+    "video_url": "https://d8j0ntlcm91z4.cloudfront.net/user_36k97Z8kXcnbegP7zyOt6RJ0mbh/hf_20260619_062022_905f7883-3958-40fb-90fd-f5de43c224e4.mp4",
+    "panel_opacity": 0.56,
+    "panel_blur": 4,
+    "panel_text_dark": true,
+    "loop_scenes": [
+      {
+        "headline": "1.000 \u20ac SPARERPAUSCHBETRAG/JAHR",
+        "body": "Jedes Kind hat 1.000 \u20ac steuerfreie Kapitalertr\u00e4ge pro Jahr. ETF-Ertr\u00e4ge, Zinsen, Dividenden \u2014 alles bis 1.000 \u20ac steuerfrei. Pro Depot, pro Jahr.",
+        "dur": 9
+      },
+      {
+        "headline": "18.000 \u20ac STEUERFREI",
+        "body": "1.000 \u20ac/Jahr \u00d7 18 Jahre = 18.000 \u20ac die du NICHT ans Finanzamt zahlst. Aber nur wenn das Depot auf den Kindesnamen l\u00e4uft.",
+        "dur": 10
+      },
+      {
+        "headline": "AUF ELTERNNAME: 0 \u20ac",
+        "body": "Eltern haben eigene 2.000 \u20ac Pauschbetrag. Das Kindeskonto auf Elternname bringt keinen Vorteil. Es muss auf den Namen des Kindes.",
+        "dur": 9
+      },
+      {
+        "headline": "SO RICHTEST DU ES EIN",
+        "body": "Depot bei Broker auf Kindesnamen er\u00f6ffnen. Freistellungsauftrag einrichten. ETF-Sparplan starten. 3 Schritte, 18.000 \u20ac Steuervorteil \u00fcber 18 Jahre.",
+        "dur": 10
+      }
+    ]
+  },
+  {
+    "id": "w02-fr-morning",
+    "scheduledFor": "2026-06-26T05:00:00Z",
+    "format": "loop_reel",
+    "status": "pending_approval",
+    "hook": "WAS DEIN KIND MIT 18 WIRKLICH BRAUCHT",
+    "caption": "F\u00fchrerschein 3.500 \u20ac, erste Wohnung 5.000 \u20ac, Studium 40.000 \u20ac \u2014 zusammen \u00fcber 50.000 \u20ac. Das ist die finanzielle Realit\u00e4t mit 18. Ich zeige dir, wie du heute anf\u00e4ngst, damit dein Kind diese Freiheit hat. Link in Bio. #Kinderfinanzen #ETFSparplan #Studium #Finanzberater #Zukunftsplanung",
+    "platform": "instagram",
+    "broll_url": "https://d8j0ntlcm91z4.cloudfront.net/user_36k97Z8kXcnbegP7zyOt6RJ0mbh/hf_20260619_062025_f77ec165-2953-44e6-8d17-382bf2f95160.mp4",
+    "video_url": "https://d8j0ntlcm91z4.cloudfront.net/user_36k97Z8kXcnbegP7zyOt6RJ0mbh/hf_20260619_062025_f77ec165-2953-44e6-8d17-382bf2f95160.mp4",
+    "panel_opacity": 0.56,
+    "panel_blur": 4,
+    "panel_text_dark": true,
+    "loop_scenes": [
+      {
+        "headline": "F\u00dcHRERSCHEIN: 3.500 \u20ac",
+        "body": "Durchschnittliche Kosten f\u00fcr den F\u00fchrerschein in Deutschland: 3.000\u20134.000 \u20ac. Ohne Ersparnisse: Kredit, Eltern, oder warten.",
+        "dur": 9
+      },
+      {
+        "headline": "ERSTE WOHNUNG: 5.000 \u20ac",
+        "body": "Kaution (3 Monatsmieten), Umzug, Grundausstattung. Mindestens 4.000\u20136.000 \u20ac f\u00fcr einen Start ohne Elternhilfe.",
+        "dur": 10
+      },
+      {
+        "headline": "STUDIUM: 40.000 \u20ac",
+        "body": "Lebenshaltungskosten ~1.100 \u20ac/Mon \u00d7 36 Monate Bachelor = 40.000 \u20ac. BAf\u00f6G deckt das selten vollst\u00e4ndig. Wer vorgesorgt hat, ist frei.",
+        "dur": 9
+      },
+      {
+        "headline": "GESAMT: 50.000 \u20ac+",
+        "body": "Das ist die finanzielle Realit\u00e4t mit 18. Mit einem gut gef\u00fchrten ETF-Sparplan ab Geburt: realistisch erreichbar. Ohne: Schulden oder Verzicht.",
+        "dur": 10
+      }
+    ]
+  },
+  {
+    "id": "w02-fr-midday",
+    "scheduledFor": "2026-06-26T10:30:00Z",
+    "format": "carousel",
+    "status": "pending_approval",
+    "hook": "BAf\u00f6G und Kinderdepot: So verlierst du keinen Cent",
+    "caption": "BAf\u00f6G-Grenze: 15.000 \u20ac Verm\u00f6gen. Depot auf Kindesnamen \u00fcber dieser Grenze = kein BAf\u00f6G. Ich erkl\u00e4re dir die richtige Struktur, damit dein Kind beides bekommt: Steuervorteile jetzt und BAf\u00f6G sp\u00e4ter. Link in Bio. #BAf\u00f6G #Kinderdepot #Studium #Finanzberater #Kinderfinanzen",
+    "platform": "instagram",
+    "asset_urls": [],
+    "slides": [
+      {
+        "text": "BAf\u00f6G-Grenze: 15.000 \u20ac Verm\u00f6gen. Dar\u00fcber = kein BAf\u00f6G. Bis zu 400 \u20ac/Monat weg."
+      },
+      {
+        "text": "Depot auf Kindesnamen \u00fcber 15.000 \u20ac: Steuervorteil ja, BAf\u00f6G nein. Richtige Planung entscheidet."
+      },
+      {
+        "text": "L\u00f6sung: Depot-Timing und Struktur im Voraus planen \u2014 ich zeige dir wie."
+      }
+    ]
+  },
+  {
+    "id": "w02-fr-evening",
+    "scheduledFor": "2026-06-26T16:00:00Z",
+    "format": "loop_reel",
+    "status": "pending_approval",
+    "hook": "ELTERNGELD: DIESE FEHLER KOSTEN DICH TAUSENDE",
+    "caption": "Elterngeld-Antrag sofort stellen \u2014 es wird nur 3 Monate r\u00fcckwirkend gezahlt! Partnerschaftsbonus und Elterngeld Plus verdoppeln die Bezugsmonate. Diese Fehler kosten Familien tausende Euro. Ich erkl\u00e4re dir die richtige Strategie in einem kurzen Gespr\u00e4ch. Link in Bio. #Elterngeld #ElterngeldPlus #Finanzberater #Familiefinanzen #Erstkindjahr",
+    "platform": "instagram",
+    "broll_url": "https://d8j0ntlcm91z4.cloudfront.net/user_36k97Z8kXcnbegP7zyOt6RJ0mbh/hf_20260619_063341_91fe4dbe-5767-4201-b353-98c55f599cf2.mp4",
+    "video_url": "https://d8j0ntlcm91z4.cloudfront.net/user_36k97Z8kXcnbegP7zyOt6RJ0mbh/hf_20260619_063341_91fe4dbe-5767-4201-b353-98c55f599cf2.mp4",
+    "panel_opacity": 0.56,
+    "panel_blur": 4,
+    "panel_text_dark": true,
+    "loop_scenes": [
+      {
+        "headline": "FEHLER 1: ZU SP\u00c4T BEANTRAGEN",
+        "body": "Elterngeld wird nur 3 Monate r\u00fcckwirkend gezahlt. Wer 4 Monate nach Geburt beantragt, verliert 1 Monat komplett. Bei 1.800 \u20ac/Mon = 1.800 \u20ac weg.",
+        "dur": 9
+      },
+      {
+        "headline": "PARTNERSCHAFTSBONUS",
+        "body": "4 zus\u00e4tzliche Monate Elterngeld, wenn beide Partner gleichzeitig 25\u201330h/Woche arbeiten. Wenige Familien kennen diesen Bonus.",
+        "dur": 10
+      },
+      {
+        "headline": "ELTERNGELD PLUS",
+        "body": "Statt 12 Monaten: 24 Monate Elterngeld Plus bei halber Rate. F\u00fcr Selbstst\u00e4ndige und Teilzeit-R\u00fcckkehrer oft der bessere Deal.",
+        "dur": 9
+      },
+      {
+        "headline": "RICHTIGE REIHENFOLGE",
+        "body": "1. Antrag sofort nach Geburt stellen. 2. Partnerschaftsbonus pr\u00fcfen. 3. Elterngeld Plus vs. Normal vergleichen. Ich rechne das gerne durch.",
+        "dur": 10
+      }
+    ]
+  },
+  {
+    "id": "w02-sa-morning",
+    "scheduledFor": "2026-06-27T05:00:00Z",
+    "format": "loop_reel",
+    "status": "pending_approval",
+    "hook": "KINDERGELD: 54.000 \u20ac DIE FAST NIEMAND RICHTIG NUTZT",
+    "caption": "Familie A verbraucht das Kindergeld. Familie B legt 100 \u20ac/Monat davon in einen ETF-Sparplan. Mit 18 hat Kind B 43.000 \u20ac \u2014 Kind A hat 0 \u20ac. 259 \u20ac/Monat \u00d7 18 Jahre sind 55.944 \u20ac Kindergeld. Wie nutzt du es? Link in Bio. #Kindergeld #ETFSparplan #Kinderfinanzen #Finanzberater #Sparplan",
+    "platform": "instagram",
+    "broll_url": "https://d8j0ntlcm91z4.cloudfront.net/user_36k97Z8kXcnbegP7zyOt6RJ0mbh/hf_20260619_061130_1d3762f4-0706-4ca1-b8a2-123d009eacb2.mp4",
+    "video_url": "https://d8j0ntlcm91z4.cloudfront.net/user_36k97Z8kXcnbegP7zyOt6RJ0mbh/hf_20260619_061130_1d3762f4-0706-4ca1-b8a2-123d009eacb2.mp4",
+    "panel_opacity": 0.56,
+    "panel_blur": 4,
+    "panel_text_dark": true,
+    "loop_scenes": [
+      {
+        "headline": "259 \u20ac/MONAT KINDERGELD",
+        "body": "F\u00fcr das erste und zweite Kind je 259 \u20ac/Monat (2026). Pro Kind \u00d7 18 Jahre = 55.944 \u20ac Gesamtkindergeld. Das ist dein Startkapital.",
+        "dur": 9
+      },
+      {
+        "headline": "FAMILIE A: ALLES AUSGEBEN",
+        "body": "Windeln, Kleidung, Spielzeug, Alltag. Nachvollziehbar. Aber: Mit 18 hat das Kind 0 \u20ac auf dem Konto.",
+        "dur": 10
+      },
+      {
+        "headline": "FAMILIE B: 100 \u20ac ANLEGEN",
+        "body": "100 \u20ac/Mon im ETF-Sparplan \u00d7 18 Jahre \u00d7 7% = 43.000 \u20ac. Gleiche Einkommen. Gleiche Ausgaben. Komplett anderer Start ins Erwachsenenleben.",
+        "dur": 9
+      },
+      {
+        "headline": "DAUERAUFTRAG EINRICHTEN",
+        "body": "Kindergeld kommt. Dauerauftrag am selben Tag: 100 \u20ac auf Kindeskonto + Sparplan. Was du nicht siehst, gibst du nicht aus.",
+        "dur": 10
+      }
+    ]
+  },
+  {
+    "id": "w02-sa-midday",
+    "scheduledFor": "2026-06-27T10:30:00Z",
+    "format": "carousel",
+    "status": "pending_approval",
+    "hook": "Welche Kinderversicherungen du wirklich brauchst",
+    "caption": "Privathaftpflicht f\u00fcr die Familie (inkl. Kind) und Berufsunf\u00e4higkeit f\u00fcr dich als Elternteil \u2014 das ist es. Alles andere kannst du meistens sparen. Ich erkl\u00e4re dir genau, was sinnvoll ist und was nicht. Link in Bio. #Kinderversicherung #Familienschutz #Finanzberater #Versicherung #Kinderfinanzen",
+    "platform": "instagram",
+    "asset_urls": [],
+    "slides": [
+      {
+        "text": "Brauchst du: Privathaftpflicht Familie (Kind eingeschlossen) \u2014 meist 80\u2013150 \u20ac/Jahr"
+      },
+      {
+        "text": "Brauchst du: Berufsunf\u00e4higkeit f\u00fcr DICH als Elternteil \u2014 dein Einkommen ist die Basis f\u00fcr alles"
+      },
+      {
+        "text": "Brauchst du NICHT: Ausbildungsversicherung, Kinderunfall meist unn\u00f6tig \u2014 spar das Geld lieber im ETF"
+      }
+    ]
+  },
+  {
+    "id": "w02-sa-evening",
+    "scheduledFor": "2026-06-27T16:00:00Z",
+    "format": "loop_reel",
+    "status": "pending_approval",
+    "hook": "ETF-SPARPLAN F\u00dcR KINDER: SO STARTEST DU HEUTE",
+    "caption": "Ab 25 \u20ac/Monat m\u00f6glich, kein Mindestbetrag, historisch 7% Rendite \u2014 ein ETF-Sparplan auf dem Kindeskonto ist der einfachste Weg, echtes Kapital f\u00fcr dein Kind aufzubauen. Ich zeige dir in 15 Minuten, welcher Broker und welcher ETF f\u00fcr euch passt. Link in Bio. #ETFSparplan #Kinderdepot #Kinderfinanzen #Finanzberater #Sparplan",
+    "platform": "instagram",
+    "broll_url": "https://d8j0ntlcm91z4.cloudfront.net/user_36k97Z8kXcnbegP7zyOt6RJ0mbh/hf_20260619_063342_04b0f7af-5196-43e1-8119-4dda79db34ae.mp4",
+    "video_url": "https://d8j0ntlcm91z4.cloudfront.net/user_36k97Z8kXcnbegP7zyOt6RJ0mbh/hf_20260619_063342_04b0f7af-5196-43e1-8119-4dda79db34ae.mp4",
+    "panel_opacity": 0.56,
+    "panel_blur": 4,
+    "panel_text_dark": true,
+    "loop_scenes": [
+      {
+        "headline": "AB 25 \u20ac/MONAT M\u00d6GLICH",
+        "body": "Die meisten Broker lassen ETF-Sparpl\u00e4ne ab 25 \u20ac/Monat zu. Kein Mindestbetrag f\u00fcr das Depot. Du kannst heute anfangen.",
+        "dur": 9
+      },
+      {
+        "headline": "KINDESKONTO + DEPOT",
+        "body": "Erst Girokonto auf Kindesnamen er\u00f6ffnen. Dann Depot bei Broker. Freistellungsauftrag 1.000 \u20ac einrichten. Sparplan starten.",
+        "dur": 10
+      },
+      {
+        "headline": "HISTORISCH 7% RENDITE",
+        "body": "MSCI World, S&P 500 oder All-World ETF: historisch ~7\u20138% p.a. \u00fcber lange Zeitr\u00e4ume. Kein aktives Handeln n\u00f6tig.",
+        "dur": 9
+      },
+      {
+        "headline": "JETZT STARTEN",
+        "body": "50 \u20ac/Mon ab Geburt: 21.380 \u20ac. 100 \u20ac/Mon: 43.000 \u20ac. 200 \u20ac/Mon: 86.000 \u20ac. Jeder Euro, der heute investiert wird, arbeitet 18 Jahre f\u00fcr dein Kind.",
+        "dur": 10
+      }
+    ]
+  },
+  {
+    "id": "w02-so-morning",
+    "scheduledFor": "2026-06-28T05:00:00Z",
+    "format": "loop_reel",
+    "status": "pending_approval",
+    "hook": "DER RIESTER-TRICK DEN DIE WENIGSTEN KENNEN",
+    "caption": "300 \u20ac Zulage vom Staat pro Kind und Jahr \u2014 bei 2 Kindern 600 \u20ac extra. Mindesteigenbeitrag einhalten und das Geld kommt automatisch. Kaum jemand nutzt diesen Vorteil vollst\u00e4ndig. Ich zeige dir, ob Riester f\u00fcr dich und deine Familie sinnvoll ist. Link in Bio. #Riester #Kinderzulage #Finanzberater #Altersvorsorge #Familiensteuern",
+    "platform": "instagram",
+    "broll_url": "https://d8j0ntlcm91z4.cloudfront.net/user_36k97Z8kXcnbegP7zyOt6RJ0mbh/hf_20260619_061133_15ff418f-046c-4a37-8fcb-ace76121c34d.mp4",
+    "video_url": "https://d8j0ntlcm91z4.cloudfront.net/user_36k97Z8kXcnbegP7zyOt6RJ0mbh/hf_20260619_061133_15ff418f-046c-4a37-8fcb-ace76121c34d.mp4",
+    "panel_opacity": 0.56,
+    "panel_blur": 4,
+    "panel_text_dark": true,
+    "loop_scenes": [
+      {
+        "headline": "300 \u20ac ZULAGE PRO KIND/JAHR",
+        "body": "F\u00fcr jedes Kind mit Anspruch auf Kindergeld gibt es 300 \u20ac Riester-Kinderzulage pro Jahr. Bei 2 Kindern 600 \u20ac, bei 3 Kindern 900 \u20ac \u2014 vom Staat.",
+        "dur": 9
+      },
+      {
+        "headline": "MINDESTEIGENBEITRAG",
+        "body": "Damit die volle Zulage flie\u00dft: mindestens 4% des Vorjahresbruttos einzahlen, abz\u00fcglich der Zulagen. Wer das nicht einzahlt, verliert Geld.",
+        "dur": 10
+      },
+      {
+        "headline": "ZULAGE KOMMT AUTOMATISCH",
+        "body": "Dauerzulagenantrag einrichten \u2014 dann kommt die Zulage jedes Jahr automatisch auf deinen Riester-Vertrag. Kein erneuter Antrag n\u00f6tig.",
+        "dur": 9
+      },
+      {
+        "headline": "IST RIESTER SINNVOLL?",
+        "body": "H\u00e4ngt von Vertrag, Einkommen und Kinderzahl ab. Mit 2+ Kindern oft sehr attraktiv. Ich pr\u00fcfe das f\u00fcr deine Situation kostenlos.",
+        "dur": 10
+      }
+    ]
+  },
+  {
+    "id": "w02-so-midday",
+    "scheduledFor": "2026-06-28T10:30:00Z",
+    "format": "carousel",
+    "status": "pending_approval",
+    "hook": "Kindergeld richtig einsetzen \u2014 so macht Familie B es",
+    "caption": "Familie A gibt Kindergeld aus. Familie B legt 100 \u20ac/Monat davon an. Mit 18: 43.000 \u20ac Kapital f\u00fcr Kind B. Gleiche Einnahmen, komplett unterschiedliche Ergebnisse. Welche Familie bist du? Link in Bio. #Kindergeld #ETFSparplan #Kinderfinanzen #Finanzberater #Sparplan",
+    "platform": "instagram",
+    "asset_urls": [],
+    "slides": [
+      {
+        "text": "Familie A: 259 \u20ac/Mon Kindergeld kommt und geht. Mit 18: 0 \u20ac auf dem Kindeskonto."
+      },
+      {
+        "text": "Familie B: Dauerauftrag 100 \u20ac/Mon direkt in ETF-Sparplan. Mit 18: 43.000 \u20ac Kapital."
+      },
+      {
+        "text": "Gleiche Einnahmen. Eine Entscheidung. Welche Familie bist du?"
+      }
+    ]
+  },
+  {
+    "id": "w02-so-evening",
+    "scheduledFor": "2026-06-28T16:00:00Z",
+    "format": "loop_reel",
+    "status": "pending_approval",
+    "hook": "WARUM DEIN KIND KEIN SPARBUCH BRAUCHT",
+    "caption": "50 \u20ac/Monat, 18 Jahre: Sparbuch (0,5%) = 11.120 \u20ac. ETF-Sparplan (7%) = 21.380 \u20ac. Gleicher Aufwand, fast doppeltes Ergebnis. Das Sparbuch f\u00fchlt sich sicher an \u2014 kostet dein Kind aber 10.000 \u20ac. Link in Bio. #Sparbuch #ETFSparplan #Kinderfinanzen #Finanzberater #Sparplan",
+    "platform": "instagram",
+    "broll_url": "https://d8j0ntlcm91z4.cloudfront.net/user_36k97Z8kXcnbegP7zyOt6RJ0mbh/hf_20260619_061134_a872e657-ecb6-49aa-b3e6-183a1cc784b6.mp4",
+    "video_url": "https://d8j0ntlcm91z4.cloudfront.net/user_36k97Z8kXcnbegP7zyOt6RJ0mbh/hf_20260619_061134_a872e657-ecb6-49aa-b3e6-183a1cc784b6.mp4",
+    "panel_opacity": 0.56,
+    "panel_blur": 4,
+    "panel_text_dark": true,
+    "loop_scenes": [
+      {
+        "headline": "SPARBUCH: 0,5% ZINSEN",
+        "body": "50 \u20ac/Mon \u00d7 18 Jahre = 10.800 \u20ac eingezahlt. Mit 0,5% Zinsen: 11.120 \u20ac nach 18 Jahren. Das reicht kaum f\u00fcr F\u00fchrerschein + erste Wohnung.",
+        "dur": 9
+      },
+      {
+        "headline": "ETF: HISTORISCH 7%",
+        "body": "Gleiche 50 \u20ac/Mon, gleiche 18 Jahre. Mit 7% ETF-Rendite: 21.380 \u20ac. Ein anderer Start ins Leben \u2014 bei gleichem monatlichem Aufwand.",
+        "dur": 10
+      },
+      {
+        "headline": "DER UNTERSCHIED: 10.260 \u20ac",
+        "body": "10.260 \u20ac Unterschied zwischen Sparbuch und ETF-Sparplan. Nicht wegen mehr Risiko. Sondern weil niemand erkl\u00e4rt hat, wie es besser geht.",
+        "dur": 9
+      },
+      {
+        "headline": "WAS IST SICHER?",
+        "body": "Sparbuch f\u00fchlt sich sicher an. Aber Kaufkraftverlust durch Inflation macht es zur teuren Illusion. ETF-Sparplan: langfristig bew\u00e4hrt und f\u00fcr Kinder ideal.",
+        "dur": 10
+      }
+    ]
+  },
+  {
+    "id": "w03-mo-morning",
+    "scheduledFor": "2026-06-29T05:00:00Z",
+    "format": "loop_reel",
+    "status": "pending_approval",
+    "hook": "DAS FINANZAMT HOFFT DASS DU DAS NIE ERF\u00c4HRST",
+    "caption": "Das Finanzamt hofft, dass du das nie erf\u00e4hrst: Kinderkonto mit Sparerpauschbetrag 1.000 \u20ac, Kinderfreibetrag 9.312 \u20ac und Betreuungskosten zu 2/3 absetzbar \u2014 plus 300 \u20ac Riester-Kinderzulage pro Jahr. Ich bin Florian, unabh\u00e4ngiger Finanzberater f\u00fcr Kinderfinanzen. Schreib mir \u2014 wir schauen gemeinsam, was du heute noch optimieren kannst. Link in Bio. #Kinderfinanzen #Steuertricks #Kinderfreibetrag #Finanzberater #Familiefinanzen",
+    "platform": "instagram",
+    "broll_url": "https://d8j0ntlcm91z4.cloudfront.net/user_36k97Z8kXcnbegP7zyOt6RJ0mbh/hf_20260619_062023_6e32e4a6-55f2-4dc8-aea6-e6bdb8f75f2e.mp4",
+    "video_url": "https://d8j0ntlcm91z4.cloudfront.net/user_36k97Z8kXcnbegP7zyOt6RJ0mbh/hf_20260619_062023_6e32e4a6-55f2-4dc8-aea6-e6bdb8f75f2e.mp4",
+    "panel_opacity": 0.56,
+    "panel_blur": 4,
+    "panel_text_dark": true,
+    "loop_scenes": [
+      {
+        "headline": "SPARERPAUSCHBETRAG F\u00dcR DEIN KIND",
+        "body": "Jedes Kind hat 1.000 \u20ac Sparerpauschbetrag/Jahr. Zinsen, Dividenden, ETF-Ertr\u00e4ge bis 1.000 \u20ac komplett steuerfrei. Die meisten Eltern lassen das einfach liegen.",
+        "dur": 9
+      },
+      {
+        "headline": "KINDERFREIBETRAG 9.312 \u20ac",
+        "body": "Pro Kind und Jahr 9.312 \u20ac Freibetrag \u2014 auf Antrag. Viele Familien nehmen ihn nicht, weil sie nicht wissen, dass er m\u00f6glich ist.",
+        "dur": 10
+      },
+      {
+        "headline": "BETREUUNGSKOSTEN ABSETZEN",
+        "body": "Kita, Tagesmutter, Hort: 2/3 der Kosten bis 4.000 \u20ac/Jahr absetzbar. Bei 6.000 \u20ac Betreuung = 4.000 \u20ac Steuerersparnis im Jahr.",
+        "dur": 9
+      },
+      {
+        "headline": "RIESTER-KINDERZULAGE",
+        "body": "300 \u20ac Zulage pro Kind und Jahr \u2014 vom Staat. Bei 2 Kindern 600 \u20ac extra. Das Finanzamt schickt dir dieses Geld nicht von alleine.",
+        "dur": 10
+      }
+    ]
+  },
+  {
+    "id": "w03-mo-midday",
+    "scheduledFor": "2026-06-29T10:30:00Z",
+    "format": "carousel",
+    "status": "pending_approval",
+    "hook": "5 Steuer-Tricks f\u00fcr Eltern, die kaum jemand kennt",
+    "caption": "Kinderbetreuung absetzen, Kinderfreibetrag nutzen, Depot auf Kindesnamen, Riester-Zulage einfordern, Ausbildungsfreibetrag \u2014 5 Tricks die dir bares Geld sparen. Ich erkl\u00e4re dir jeden davon in einem kostenlosen Gespr\u00e4ch. Link in Bio. #Steuertricks #Kinderfinanzen #Familiensteuern #Finanzberater #Steuersparen",
+    "platform": "instagram",
+    "asset_urls": [],
+    "slides": [
+      {
+        "text": "Trick 1: Kinderbetreuungskosten zu 2/3 absetzen \u2014 max. 4.000 \u20ac/Jahr und Kind"
+      },
+      {
+        "text": "Trick 2: Depot auf Kindesnamen = 1.000 \u20ac Sparerpauschbetrag pro Jahr steuerfrei"
+      },
+      {
+        "text": "Trick 3: Kinderfreibetrag 9.312 \u20ac auf Antrag \u2014 viele Eltern kennen ihn nicht"
+      }
+    ]
+  },
+  {
+    "id": "w03-mo-evening",
+    "scheduledFor": "2026-06-29T16:00:00Z",
+    "format": "loop_reel",
+    "status": "pending_approval",
+    "hook": "WAS DU F\u00dcR DEIN KIND ABSETZEN KANNST",
+    "caption": "Kinderbetreuung bis 4.000 \u20ac/Jahr absetzen, Ausbildungsfreibetrag 1.200 \u20ac, Schulgeld zu 30% und Riester-Kinderzulage 300 \u20ac/Kind \u2014 das sind echte Steuervorteile, die du heute nutzen kannst. Ich zeige dir in 15 Minuten, wie du das auf deine Situation anwendest. Link in Bio. #Steuertipps #Kinderbetreuung #Familiensteuern #Kinderfreibetrag #Finanzberater",
+    "platform": "instagram",
+    "broll_url": "https://d8j0ntlcm91z4.cloudfront.net/user_36k97Z8kXcnbegP7zyOt6RJ0mbh/hf_20260619_061135_8dc69951-1578-417f-8446-0a68940c9c11.mp4",
+    "video_url": "https://d8j0ntlcm91z4.cloudfront.net/user_36k97Z8kXcnbegP7zyOt6RJ0mbh/hf_20260619_061135_8dc69951-1578-417f-8446-0a68940c9c11.mp4",
+    "panel_opacity": 0.56,
+    "panel_blur": 4,
+    "panel_text_dark": true,
+    "loop_scenes": [
+      {
+        "headline": "KINDERBETREUUNG: 4.000 \u20ac ABSETZEN",
+        "body": "2/3 der Betreuungskosten absetzbar, max. 4.000 \u20ac/Jahr und Kind. Kita, Tagesmutter, Hort \u2014 alles z\u00e4hlt. Bei 3 Kindern bis zu 12.000 \u20ac Abzug.",
+        "dur": 9
+      },
+      {
+        "headline": "AUSBILDUNGSFREIBETRAG 1.200 \u20ac",
+        "body": "Wenn dein Kind ausw\u00e4rts studiert oder in Ausbildung ist: 1.200 \u20ac Freibetrag pro Jahr. Einfach in der Steuererkl\u00e4rung eintragen.",
+        "dur": 10
+      },
+      {
+        "headline": "SCHULGELD 30% ABSETZEN",
+        "body": "Private Schule? 30% des Schulgeldes absetzbar \u2014 max. 5.000 \u20ac/Jahr. Viele Eltern kennen diese M\u00f6glichkeit nicht.",
+        "dur": 9
+      },
+      {
+        "headline": "RIESTER F\u00dcR KINDER",
+        "body": "300 \u20ac Zulage vom Staat pro Kind und Jahr. Mindestbeitrag einhalten und das Geld kommt automatisch. Bei 2 Kindern 600 \u20ac extra.",
+        "dur": 10
+      }
+    ]
+  },
+  {
+    "id": "w03-di-morning",
+    "scheduledFor": "2026-06-30T05:00:00Z",
+    "format": "loop_reel",
+    "status": "pending_approval",
+    "hook": "DAS MUSST DU IM ERSTEN BABYJAHR ERLEDIGEN",
+    "caption": "Geburtsurkunde sofort beantragen, Krankenkasse innerhalb von 2 Monaten anmelden, Kindergeld \u2014 Frist 6 Monate \u2014 und Jahresende Steuerfreibetrag sichern. Diese Fristen kosten dich Tausende, wenn du sie verpasst. Ich helfe dir, alles in der richtigen Reihenfolge zu erledigen. Link in Bio. #Erstkindjahr #Kindergeld #Elternzeit #Finanzberater #Familiefinanzen",
+    "platform": "instagram",
+    "broll_url": "https://d8j0ntlcm91z4.cloudfront.net/user_36k97Z8kXcnbegP7zyOt6RJ0mbh/hf_20260619_062022_905f7883-3958-40fb-90fd-f5de43c224e4.mp4",
+    "video_url": "https://d8j0ntlcm91z4.cloudfront.net/user_36k97Z8kXcnbegP7zyOt6RJ0mbh/hf_20260619_062022_905f7883-3958-40fb-90fd-f5de43c224e4.mp4",
+    "panel_opacity": 0.56,
+    "panel_blur": 4,
+    "panel_text_dark": true,
+    "loop_scenes": [
+      {
+        "headline": "GEBURTSURKUNDE: SOFORT",
+        "body": "Ohne Geburtsurkunde geht nichts. Standesamt meist innerhalb von 1 Woche. Dann: Elterngeld-Antrag, Kindergeld, Krankenkasse \u2014 alles h\u00e4ngt daran.",
+        "dur": 9
+      },
+      {
+        "headline": "KRANKENKASSE: 2 MONATE FRIST",
+        "body": "Dein Kind muss innerhalb von 2 Monaten nach Geburt bei einer Krankenkasse angemeldet sein. Danach drohen Nachzahlungen.",
+        "dur": 10
+      },
+      {
+        "headline": "KINDERGELD: 6 MONATE R\u00dcCKWIRKEND",
+        "body": "259 \u20ac/Monat \u2014 aber nur 6 Monate r\u00fcckwirkend! Wer zu sp\u00e4t beantragt verliert Geld. Antrag sofort nach Geburtsurkunde stellen.",
+        "dur": 9
+      },
+      {
+        "headline": "STEUERFREIBETRAG JAHRESENDE",
+        "body": "Im Geburtsjahr noch Steuerfreibetrag f\u00fcr dein Kind sichern. Selbst wenn Kind im Dezember geboren: voller Kinderfreibetrag f\u00fcr das ganze Jahr.",
+        "dur": 10
+      }
+    ]
+  },
+  {
+    "id": "w03-di-midday",
+    "scheduledFor": "2026-06-30T10:30:00Z",
+    "format": "carousel",
+    "status": "pending_approval",
+    "hook": "Dein Kind wird 18 \u2014 hast du WIRKLICH genug gespart?",
+    "caption": "F\u00fchrerschein 3.500 \u20ac, erste Wohnung 5.000 \u20ac, Studium 40.000 \u20ac. Bist du auf Kurs? Ich zeige dir in 15 Minuten, wie du heute noch gegensteuern kannst. Link in Bio. #Sparplan #ETFSparplan #Kinderfinanzen #Finanzberater #Zukunftsplanung",
+    "platform": "instagram",
+    "asset_urls": [],
+    "slides": [
+      {
+        "text": "Reality Check: F\u00fchrerschein 3.500 \u20ac + erste Wohnung 5.000 \u20ac + Studium 40.000 \u20ac = 50.000 \u20ac+"
+      },
+      {
+        "text": "50 \u20ac/Mon ETF-Sparplan ab Geburt = 21.380 \u20ac mit 18. Bist du auf Kurs?"
+      },
+      {
+        "text": "100 \u20ac/Mon = 43.000 \u20ac. Heute noch einrichten \u2014 jeder Monat z\u00e4hlt."
+      }
+    ]
+  },
+  {
+    "id": "w03-di-evening",
+    "scheduledFor": "2026-06-30T16:00:00Z",
+    "format": "loop_reel",
+    "status": "pending_approval",
+    "hook": "KINDERVERSICHERUNGEN DIE SICH NICHT LOHNEN",
+    "caption": "Ausbildungsversicherungen mit unter 2% Rendite klingen sicher \u2014 bringen aber kaum etwas. 50 \u20ac/Monat im ETF-Sparplan ergeben nach 18 Jahren historisch deutlich mehr. Lass dich nicht von Provisionsinteressen leiten. Ich erkl\u00e4re dir, was wirklich sinnvoll ist. Link in Bio. #Kinderversicherung #ETFSparplan #Kinderfinanzen #Finanzberater #Familiensteuern",
+    "platform": "instagram",
+    "broll_url": "https://d8j0ntlcm91z4.cloudfront.net/user_36k97Z8kXcnbegP7zyOt6RJ0mbh/hf_20260619_062025_f77ec165-2953-44e6-8d17-382bf2f95160.mp4",
+    "video_url": "https://d8j0ntlcm91z4.cloudfront.net/user_36k97Z8kXcnbegP7zyOt6RJ0mbh/hf_20260619_062025_f77ec165-2953-44e6-8d17-382bf2f95160.mp4",
+    "panel_opacity": 0.56,
+    "panel_blur": 4,
+    "panel_text_dark": true,
+    "loop_scenes": [
+      {
+        "headline": "AUSBILDUNGSVERSICHERUNG: FINGER WEG",
+        "body": "Rendite oft unter 2%. 50 \u20ac/Monat \u00d7 18 Jahre: Einzahlung 10.800 \u20ac, Auszahlung ca. 12.000 \u20ac. Im ETF-Sparplan: 21.380 \u20ac. Der Unterschied ist 9.380 \u20ac.",
+        "dur": 9
+      },
+      {
+        "headline": "WAS DU WIRKLICH BRAUCHST",
+        "body": "Privathaftpflicht f\u00fcr die Familie (inkl. Kind). Berufsunf\u00e4higkeitsversicherung f\u00fcr DICH als Elternteil. Mehr braucht es meistens nicht.",
+        "dur": 9
+      },
+      {
+        "headline": "DER ETF-VERGLEICH",
+        "body": "50 \u20ac/Monat \u00d7 18 Jahre: Ausbildungsversicherung \u2248 12.000 \u20ac. ETF-Sparplan (hist. 7%) \u2248 21.380 \u20ac. Kein Risiko, keine Provision, volle Transparenz.",
+        "dur": 10
+      }
+    ]
+  },
+  {
+    "id": "w03-mi-morning",
+    "scheduledFor": "2026-07-01T05:00:00Z",
+    "format": "loop_reel",
+    "status": "pending_approval",
+    "hook": "SO NIMMST DU DEINEM KIND DIE FINANZIELLEN SORGEN",
+    "caption": "Kindergeld aufteilen und direkt in den ETF-Sparplan investieren. 100 \u20ac/Monat \u00d7 18 Jahre ergeben 43.000 \u20ac \u2014 Familie A macht nichts, Familie B macht genau das. Der Unterschied mit 18: 54.000 \u20ac Gesamtkapital vs. 0 \u20ac. Starte heute. Link in Bio. #Kindergeld #Sparplan #ETF #Kinderfinanzen #Finanzberater",
+    "platform": "instagram",
+    "broll_url": "https://d8j0ntlcm91z4.cloudfront.net/user_36k97Z8kXcnbegP7zyOt6RJ0mbh/hf_20260619_063341_91fe4dbe-5767-4201-b353-98c55f599cf2.mp4",
+    "video_url": "https://d8j0ntlcm91z4.cloudfront.net/user_36k97Z8kXcnbegP7zyOt6RJ0mbh/hf_20260619_063341_91fe4dbe-5767-4201-b353-98c55f599cf2.mp4",
+    "panel_opacity": 0.56,
+    "panel_blur": 4,
+    "panel_text_dark": true,
+    "loop_scenes": [
+      {
+        "headline": "FAMILIE A vs FAMILIE B",
+        "body": "Familie A: Kindergeld kommt, Kindergeld geht. Familie B: 100 \u20ac/Monat direkt per Dauerauftrag auf Kindeskonto + ETF-Sparplan. Beide verdienen gleich.",
+        "dur": 9
+      },
+      {
+        "headline": "100 \u20ac / MONAT \u00d7 18 JAHRE",
+        "body": "Historische ETF-Rendite ~7% p.a. Ergebnis mit 18: 43.000 \u20ac. F\u00fchrerschein, Wohnung, Studium \u2014 einfach finanziert.",
+        "dur": 10
+      },
+      {
+        "headline": "GESAMTBETRAG: 54.000 \u20ac",
+        "body": "Kindergeld allein: 259 \u20ac/Mon \u00d7 18 Jahre = 55.944 \u20ac. Gut angelegt: daraus werden 54.000 \u20ac Kapital f\u00fcr dein Kind. Schlecht angelegt: 0 \u20ac.",
+        "dur": 9
+      },
+      {
+        "headline": "STARTE HEUTE",
+        "body": "Nicht morgen. Nicht wenn das Depot eingerichtet ist. Heute. Jeder Monat fr\u00fcher kostet dein Kind Kapital mit 18.",
+        "dur": 10
+      }
+    ]
+  },
+  {
+    "id": "w03-mi-midday",
+    "scheduledFor": "2026-07-01T10:30:00Z",
+    "format": "carousel",
+    "status": "pending_approval",
+    "hook": "Elterngeld optimal nutzen: Die 4 h\u00e4ufigsten Fehler",
+    "caption": "Zu sp\u00e4t beantragen, Partnerschaftsbonus verpassen, Elterngeld Plus ignorieren, falsche Monate w\u00e4hlen \u2014 diese 4 Fehler kosten Familien tausende Euro. Ich rechne das gerne f\u00fcr euch durch. Link in Bio. #Elterngeld #Familiefinanzen #Finanzberater #ElterngeldPlus #Erstkindjahr",
+    "platform": "instagram",
+    "asset_urls": [],
+    "slides": [
+      {
+        "text": "Fehler 1: Zu sp\u00e4t beantragen \u2014 Elterngeld wird nur 3 Monate r\u00fcckwirkend gezahlt!"
+      },
+      {
+        "text": "Fehler 2: Partnerschaftsbonus verpassen \u2014 4 Extra-Monate bei gleichzeitiger Teilzeit"
+      },
+      {
+        "text": "Fehler 3: Elterngeld Plus nicht gepr\u00fcft \u2014 kann bei Teilzeitarbeit besser sein als Normal-Elterngeld"
+      }
+    ]
+  },
+  {
+    "id": "w03-mi-evening",
+    "scheduledFor": "2026-07-01T16:00:00Z",
+    "format": "loop_reel",
+    "status": "pending_approval",
+    "hook": "DIE BAF\u00d6G-FALLE \u2014 SO VERLIERT DEIN KIND TAUSENDE",
+    "caption": "BAf\u00f6G-Grenze: 15.000 \u20ac Verm\u00f6gen. Steht das Depot auf dem Namen deines Kindes und \u00fcberschreitet diese Grenze, verliert es den BAf\u00f6G-Anspruch. L\u00f6sung: Depot vorerst auf Elternname lassen. Ich erkl\u00e4re die Details in einem kurzen Gespr\u00e4ch. Link in Bio. #BAf\u00f6G #Kinderdepot #Studium #Finanzberater #Kinderfinanzen",
+    "platform": "instagram",
+    "broll_url": "https://d8j0ntlcm91z4.cloudfront.net/user_36k97Z8kXcnbegP7zyOt6RJ0mbh/hf_20260619_061130_1d3762f4-0706-4ca1-b8a2-123d009eacb2.mp4",
+    "video_url": "https://d8j0ntlcm91z4.cloudfront.net/user_36k97Z8kXcnbegP7zyOt6RJ0mbh/hf_20260619_061130_1d3762f4-0706-4ca1-b8a2-123d009eacb2.mp4",
+    "panel_opacity": 0.56,
+    "panel_blur": 4,
+    "panel_text_dark": true,
+    "loop_scenes": [
+      {
+        "headline": "DIE BAF\u00d6G-VERM\u00d6GENSGRENZE",
+        "body": "Studenten d\u00fcrfen max. 15.000 \u20ac Verm\u00f6gen haben. Dar\u00fcber: kein BAf\u00f6G. Wer mit 18 ein volles Depot hat, zahlt das Studium selbst.",
+        "dur": 9
+      },
+      {
+        "headline": "DAS KINDERDEPOT ALS FALLE",
+        "body": "Depot auf Kindesnamen: gut f\u00fcr Steuer, schlecht f\u00fcr BAf\u00f6G. Mit 43.000 \u20ac auf dem Depot ist BAf\u00f6G komplett weg. Verlust: bis zu 400 \u20ac/Monat.",
+        "dur": 10
+      },
+      {
+        "headline": "DIE L\u00d6SUNG",
+        "body": "Depot auf Elternname lassen bis kurz vor Studienende. Dann \u00fcbertragen. Alternativ: gut planen, wann Verm\u00f6gen unter 15.000 \u20ac f\u00e4llt.",
+        "dur": 9
+      },
+      {
+        "headline": "FR\u00dcHZEITIG PLANEN",
+        "body": "Diese Entscheidung triffst du nicht mit 17 \u2014 die triffst du heute. Die Depotstruktur entscheidet \u00fcber BAf\u00f6G-Anspruch und Steuervorteil.",
+        "dur": 10
+      }
+    ]
+  },
+  {
+    "id": "w03-do-morning",
+    "scheduledFor": "2026-07-02T05:00:00Z",
+    "format": "loop_reel",
+    "status": "pending_approval",
+    "hook": "DIESE 3 FEHLER KOSTEN DEIN KIND 20.000 \u20ac",
+    "caption": "Depot auf Elternname statt Kindesnamen: Sparerpauschbetrag verloren. Sparbuch statt ETF: 10.000 \u20ac weniger. Falsche Versicherung statt Sparplan: nochmal 9.000 \u20ac weg. Zusammen leicht 20.000 \u20ac Verlust. Ich helfe dir, das zu vermeiden. Link in Bio. #Kinderfinanzen #Sparplan #ETF #Finanzberater #Steuerfehler",
+    "platform": "instagram",
+    "broll_url": "https://d8j0ntlcm91z4.cloudfront.net/user_36k97Z8kXcnbegP7zyOt6RJ0mbh/hf_20260619_063342_04b0f7af-5196-43e1-8119-4dda79db34ae.mp4",
+    "video_url": "https://d8j0ntlcm91z4.cloudfront.net/user_36k97Z8kXcnbegP7zyOt6RJ0mbh/hf_20260619_063342_04b0f7af-5196-43e1-8119-4dda79db34ae.mp4",
+    "panel_opacity": 0.56,
+    "panel_blur": 4,
+    "panel_text_dark": true,
+    "loop_scenes": [
+      {
+        "headline": "FEHLER 1: DEPOT AUF ELTERNNAME",
+        "body": "1.000 \u20ac Sparerpauschbetrag/Jahr, 18 Jahre = 18.000 \u20ac steuerfrei \u2014 aber nur wenn das Depot auf dem Kindesnamen ist. Auf Elternname: 0 \u20ac Freibetrag.",
+        "dur": 9
+      },
+      {
+        "headline": "FEHLER 2: SPARBUCH STATT ETF",
+        "body": "50 \u20ac/Mon \u00d7 18 Jahre: Sparbuch (0,5%) = 11.120 \u20ac. ETF (7%) = 21.380 \u20ac. Differenz: 10.260 \u20ac. Gleicher Aufwand, ganz anderes Ergebnis.",
+        "dur": 10
+      },
+      {
+        "headline": "FEHLER 3: FALSCHE VERSICHERUNG",
+        "body": "Ausbildungsversicherung statt ETF kostet 9.380 \u20ac \u00fcber 18 Jahre. Provision f\u00fcr den Berater, Verlust f\u00fcr dein Kind.",
+        "dur": 9
+      },
+      {
+        "headline": "WAS DU HEUTE TUN KANNST",
+        "body": "Depot auf Kindesnamen er\u00f6ffnen. ETF-Sparplan einrichten. Ausbildungsversicherung k\u00fcndigen (pr\u00fcfen lassen). Drei Schritte, potenziell 20.000 \u20ac Unterschied.",
+        "dur": 10
+      }
+    ]
+  },
+  {
+    "id": "w03-do-midday",
+    "scheduledFor": "2026-07-02T10:30:00Z",
+    "format": "carousel",
+    "status": "pending_approval",
+    "hook": "Kinderdepot vs Sparbuch: Der Vergleich nach 18 Jahren",
+    "caption": "50 \u20ac/Monat \u00d7 18 Jahre: Sparbuch = 11.120 \u20ac. ETF-Depot = 21.380 \u20ac. Gleicher Aufwand. Fast doppeltes Ergebnis. Die Entscheidung triffst du heute. Link in Bio. #Kinderdepot #Sparbuch #ETF #Kinderfinanzen #Finanzberater",
+    "platform": "instagram",
+    "asset_urls": [],
+    "slides": [
+      {
+        "text": "Sparbuch: 50 \u20ac/Mon \u00d7 18 Jahre \u00d7 0,5% = 11.120 \u20ac \u2014 reicht kaum f\u00fcr F\u00fchrerschein + erste Wohnung"
+      },
+      {
+        "text": "ETF-Depot: gleiche 50 \u20ac/Mon \u00d7 18 Jahre \u00d7 7% = 21.380 \u20ac \u2014 ein echter Start ins Erwachsenenleben"
+      },
+      {
+        "text": "Unterschied: 10.260 \u20ac \u2014 bei GLEICHEM monatlichem Einsatz. Die Entscheidung liegt bei dir."
+      }
+    ]
+  },
+  {
+    "id": "w03-do-evening",
+    "scheduledFor": "2026-07-02T16:00:00Z",
+    "format": "loop_reel",
+    "status": "pending_approval",
+    "hook": "WARUM DAS KINDESKONTO AUF DEN KINDESNAMEN MUSS",
+    "caption": "Depot auf Kindesnamen: 1.000 \u20ac Sparerpauschbetrag pro Jahr, \u00fcber 18 Jahre sind das 18.000 \u20ac steuerfrei. Depot auf Elternname: 0 \u20ac. Diese eine Entscheidung macht den Unterschied. Ich erkl\u00e4re dir in 15 Minuten, wie du das richtig aufstellst. Link in Bio. #Kindeskonto #Depot #Sparerpauschbetrag #Kinderfinanzen #Finanzberater",
+    "platform": "instagram",
+    "broll_url": "https://d8j0ntlcm91z4.cloudfront.net/user_36k97Z8kXcnbegP7zyOt6RJ0mbh/hf_20260619_061133_15ff418f-046c-4a37-8fcb-ace76121c34d.mp4",
+    "video_url": "https://d8j0ntlcm91z4.cloudfront.net/user_36k97Z8kXcnbegP7zyOt6RJ0mbh/hf_20260619_061133_15ff418f-046c-4a37-8fcb-ace76121c34d.mp4",
+    "panel_opacity": 0.56,
+    "panel_blur": 4,
+    "panel_text_dark": true,
+    "loop_scenes": [
+      {
+        "headline": "1.000 \u20ac SPARERPAUSCHBETRAG/JAHR",
+        "body": "Jedes Kind hat 1.000 \u20ac steuerfreie Kapitalertr\u00e4ge pro Jahr. ETF-Ertr\u00e4ge, Zinsen, Dividenden \u2014 alles bis 1.000 \u20ac steuerfrei. Pro Depot, pro Jahr.",
+        "dur": 9
+      },
+      {
+        "headline": "18.000 \u20ac STEUERFREI",
+        "body": "1.000 \u20ac/Jahr \u00d7 18 Jahre = 18.000 \u20ac die du NICHT ans Finanzamt zahlst. Aber nur wenn das Depot auf den Kindesnamen l\u00e4uft.",
+        "dur": 10
+      },
+      {
+        "headline": "AUF ELTERNNAME: 0 \u20ac",
+        "body": "Eltern haben eigene 2.000 \u20ac Pauschbetrag. Das Kindeskonto auf Elternname bringt keinen Vorteil. Es muss auf den Namen des Kindes.",
+        "dur": 9
+      },
+      {
+        "headline": "SO RICHTEST DU ES EIN",
+        "body": "Depot bei Broker auf Kindesnamen er\u00f6ffnen. Freistellungsauftrag einrichten. ETF-Sparplan starten. 3 Schritte, 18.000 \u20ac Steuervorteil \u00fcber 18 Jahre.",
+        "dur": 10
+      }
+    ]
+  },
+  {
+    "id": "w03-fr-morning",
+    "scheduledFor": "2026-07-03T05:00:00Z",
+    "format": "loop_reel",
+    "status": "pending_approval",
+    "hook": "WAS DEIN KIND MIT 18 WIRKLICH BRAUCHT",
+    "caption": "F\u00fchrerschein 3.500 \u20ac, erste Wohnung 5.000 \u20ac, Studium 40.000 \u20ac \u2014 zusammen \u00fcber 50.000 \u20ac. Das ist die finanzielle Realit\u00e4t mit 18. Ich zeige dir, wie du heute anf\u00e4ngst, damit dein Kind diese Freiheit hat. Link in Bio. #Kinderfinanzen #ETFSparplan #Studium #Finanzberater #Zukunftsplanung",
+    "platform": "instagram",
+    "broll_url": "https://d8j0ntlcm91z4.cloudfront.net/user_36k97Z8kXcnbegP7zyOt6RJ0mbh/hf_20260619_061134_a872e657-ecb6-49aa-b3e6-183a1cc784b6.mp4",
+    "video_url": "https://d8j0ntlcm91z4.cloudfront.net/user_36k97Z8kXcnbegP7zyOt6RJ0mbh/hf_20260619_061134_a872e657-ecb6-49aa-b3e6-183a1cc784b6.mp4",
+    "panel_opacity": 0.56,
+    "panel_blur": 4,
+    "panel_text_dark": true,
+    "loop_scenes": [
+      {
+        "headline": "F\u00dcHRERSCHEIN: 3.500 \u20ac",
+        "body": "Durchschnittliche Kosten f\u00fcr den F\u00fchrerschein in Deutschland: 3.000\u20134.000 \u20ac. Ohne Ersparnisse: Kredit, Eltern, oder warten.",
+        "dur": 9
+      },
+      {
+        "headline": "ERSTE WOHNUNG: 5.000 \u20ac",
+        "body": "Kaution (3 Monatsmieten), Umzug, Grundausstattung. Mindestens 4.000\u20136.000 \u20ac f\u00fcr einen Start ohne Elternhilfe.",
+        "dur": 10
+      },
+      {
+        "headline": "STUDIUM: 40.000 \u20ac",
+        "body": "Lebenshaltungskosten ~1.100 \u20ac/Mon \u00d7 36 Monate Bachelor = 40.000 \u20ac. BAf\u00f6G deckt das selten vollst\u00e4ndig. Wer vorgesorgt hat, ist frei.",
+        "dur": 9
+      },
+      {
+        "headline": "GESAMT: 50.000 \u20ac+",
+        "body": "Das ist die finanzielle Realit\u00e4t mit 18. Mit einem gut gef\u00fchrten ETF-Sparplan ab Geburt: realistisch erreichbar. Ohne: Schulden oder Verzicht.",
+        "dur": 10
+      }
+    ]
+  },
+  {
+    "id": "w03-fr-midday",
+    "scheduledFor": "2026-07-03T10:30:00Z",
+    "format": "carousel",
+    "status": "pending_approval",
+    "hook": "BAf\u00f6G und Kinderdepot: So verlierst du keinen Cent",
+    "caption": "BAf\u00f6G-Grenze: 15.000 \u20ac Verm\u00f6gen. Depot auf Kindesnamen \u00fcber dieser Grenze = kein BAf\u00f6G. Ich erkl\u00e4re dir die richtige Struktur, damit dein Kind beides bekommt: Steuervorteile jetzt und BAf\u00f6G sp\u00e4ter. Link in Bio. #BAf\u00f6G #Kinderdepot #Studium #Finanzberater #Kinderfinanzen",
+    "platform": "instagram",
+    "asset_urls": [],
+    "slides": [
+      {
+        "text": "BAf\u00f6G-Grenze: 15.000 \u20ac Verm\u00f6gen. Dar\u00fcber = kein BAf\u00f6G. Bis zu 400 \u20ac/Monat weg."
+      },
+      {
+        "text": "Depot auf Kindesnamen \u00fcber 15.000 \u20ac: Steuervorteil ja, BAf\u00f6G nein. Richtige Planung entscheidet."
+      },
+      {
+        "text": "L\u00f6sung: Depot-Timing und Struktur im Voraus planen \u2014 ich zeige dir wie."
+      }
+    ]
+  },
+  {
+    "id": "w03-fr-evening",
+    "scheduledFor": "2026-07-03T16:00:00Z",
+    "format": "loop_reel",
+    "status": "pending_approval",
+    "hook": "ELTERNGELD: DIESE FEHLER KOSTEN DICH TAUSENDE",
+    "caption": "Elterngeld-Antrag sofort stellen \u2014 es wird nur 3 Monate r\u00fcckwirkend gezahlt! Partnerschaftsbonus und Elterngeld Plus verdoppeln die Bezugsmonate. Diese Fehler kosten Familien tausende Euro. Ich erkl\u00e4re dir die richtige Strategie in einem kurzen Gespr\u00e4ch. Link in Bio. #Elterngeld #ElterngeldPlus #Finanzberater #Familiefinanzen #Erstkindjahr",
+    "platform": "instagram",
+    "broll_url": "https://d8j0ntlcm91z4.cloudfront.net/user_36k97Z8kXcnbegP7zyOt6RJ0mbh/hf_20260619_062023_6e32e4a6-55f2-4dc8-aea6-e6bdb8f75f2e.mp4",
+    "video_url": "https://d8j0ntlcm91z4.cloudfront.net/user_36k97Z8kXcnbegP7zyOt6RJ0mbh/hf_20260619_062023_6e32e4a6-55f2-4dc8-aea6-e6bdb8f75f2e.mp4",
+    "panel_opacity": 0.56,
+    "panel_blur": 4,
+    "panel_text_dark": true,
+    "loop_scenes": [
+      {
+        "headline": "FEHLER 1: ZU SP\u00c4T BEANTRAGEN",
+        "body": "Elterngeld wird nur 3 Monate r\u00fcckwirkend gezahlt. Wer 4 Monate nach Geburt beantragt, verliert 1 Monat komplett. Bei 1.800 \u20ac/Mon = 1.800 \u20ac weg.",
+        "dur": 9
+      },
+      {
+        "headline": "PARTNERSCHAFTSBONUS",
+        "body": "4 zus\u00e4tzliche Monate Elterngeld, wenn beide Partner gleichzeitig 25\u201330h/Woche arbeiten. Wenige Familien kennen diesen Bonus.",
+        "dur": 10
+      },
+      {
+        "headline": "ELTERNGELD PLUS",
+        "body": "Statt 12 Monaten: 24 Monate Elterngeld Plus bei halber Rate. F\u00fcr Selbstst\u00e4ndige und Teilzeit-R\u00fcckkehrer oft der bessere Deal.",
+        "dur": 9
+      },
+      {
+        "headline": "RICHTIGE REIHENFOLGE",
+        "body": "1. Antrag sofort nach Geburt stellen. 2. Partnerschaftsbonus pr\u00fcfen. 3. Elterngeld Plus vs. Normal vergleichen. Ich rechne das gerne durch.",
+        "dur": 10
+      }
+    ]
+  },
+  {
+    "id": "w03-sa-morning",
+    "scheduledFor": "2026-07-04T05:00:00Z",
+    "format": "loop_reel",
+    "status": "pending_approval",
+    "hook": "KINDERGELD: 54.000 \u20ac DIE FAST NIEMAND RICHTIG NUTZT",
+    "caption": "Familie A verbraucht das Kindergeld. Familie B legt 100 \u20ac/Monat davon in einen ETF-Sparplan. Mit 18 hat Kind B 43.000 \u20ac \u2014 Kind A hat 0 \u20ac. 259 \u20ac/Monat \u00d7 18 Jahre sind 55.944 \u20ac Kindergeld. Wie nutzt du es? Link in Bio. #Kindergeld #ETFSparplan #Kinderfinanzen #Finanzberater #Sparplan",
+    "platform": "instagram",
+    "broll_url": "https://d8j0ntlcm91z4.cloudfront.net/user_36k97Z8kXcnbegP7zyOt6RJ0mbh/hf_20260619_061135_8dc69951-1578-417f-8446-0a68940c9c11.mp4",
+    "video_url": "https://d8j0ntlcm91z4.cloudfront.net/user_36k97Z8kXcnbegP7zyOt6RJ0mbh/hf_20260619_061135_8dc69951-1578-417f-8446-0a68940c9c11.mp4",
+    "panel_opacity": 0.56,
+    "panel_blur": 4,
+    "panel_text_dark": true,
+    "loop_scenes": [
+      {
+        "headline": "259 \u20ac/MONAT KINDERGELD",
+        "body": "F\u00fcr das erste und zweite Kind je 259 \u20ac/Monat (2026). Pro Kind \u00d7 18 Jahre = 55.944 \u20ac Gesamtkindergeld. Das ist dein Startkapital.",
+        "dur": 9
+      },
+      {
+        "headline": "FAMILIE A: ALLES AUSGEBEN",
+        "body": "Windeln, Kleidung, Spielzeug, Alltag. Nachvollziehbar. Aber: Mit 18 hat das Kind 0 \u20ac auf dem Konto.",
+        "dur": 10
+      },
+      {
+        "headline": "FAMILIE B: 100 \u20ac ANLEGEN",
+        "body": "100 \u20ac/Mon im ETF-Sparplan \u00d7 18 Jahre \u00d7 7% = 43.000 \u20ac. Gleiche Einkommen. Gleiche Ausgaben. Komplett anderer Start ins Erwachsenenleben.",
+        "dur": 9
+      },
+      {
+        "headline": "DAUERAUFTRAG EINRICHTEN",
+        "body": "Kindergeld kommt. Dauerauftrag am selben Tag: 100 \u20ac auf Kindeskonto + Sparplan. Was du nicht siehst, gibst du nicht aus.",
+        "dur": 10
+      }
+    ]
+  },
+  {
+    "id": "w03-sa-midday",
+    "scheduledFor": "2026-07-04T10:30:00Z",
+    "format": "carousel",
+    "status": "pending_approval",
+    "hook": "Welche Kinderversicherungen du wirklich brauchst",
+    "caption": "Privathaftpflicht f\u00fcr die Familie (inkl. Kind) und Berufsunf\u00e4higkeit f\u00fcr dich als Elternteil \u2014 das ist es. Alles andere kannst du meistens sparen. Ich erkl\u00e4re dir genau, was sinnvoll ist und was nicht. Link in Bio. #Kinderversicherung #Familienschutz #Finanzberater #Versicherung #Kinderfinanzen",
+    "platform": "instagram",
+    "asset_urls": [],
+    "slides": [
+      {
+        "text": "Brauchst du: Privathaftpflicht Familie (Kind eingeschlossen) \u2014 meist 80\u2013150 \u20ac/Jahr"
+      },
+      {
+        "text": "Brauchst du: Berufsunf\u00e4higkeit f\u00fcr DICH als Elternteil \u2014 dein Einkommen ist die Basis f\u00fcr alles"
+      },
+      {
+        "text": "Brauchst du NICHT: Ausbildungsversicherung, Kinderunfall meist unn\u00f6tig \u2014 spar das Geld lieber im ETF"
+      }
+    ]
+  },
+  {
+    "id": "w03-sa-evening",
+    "scheduledFor": "2026-07-04T16:00:00Z",
+    "format": "loop_reel",
+    "status": "pending_approval",
+    "hook": "ETF-SPARPLAN F\u00dcR KINDER: SO STARTEST DU HEUTE",
+    "caption": "Ab 25 \u20ac/Monat m\u00f6glich, kein Mindestbetrag, historisch 7% Rendite \u2014 ein ETF-Sparplan auf dem Kindeskonto ist der einfachste Weg, echtes Kapital f\u00fcr dein Kind aufzubauen. Ich zeige dir in 15 Minuten, welcher Broker und welcher ETF f\u00fcr euch passt. Link in Bio. #ETFSparplan #Kinderdepot #Kinderfinanzen #Finanzberater #Sparplan",
+    "platform": "instagram",
+    "broll_url": "https://d8j0ntlcm91z4.cloudfront.net/user_36k97Z8kXcnbegP7zyOt6RJ0mbh/hf_20260619_062022_905f7883-3958-40fb-90fd-f5de43c224e4.mp4",
+    "video_url": "https://d8j0ntlcm91z4.cloudfront.net/user_36k97Z8kXcnbegP7zyOt6RJ0mbh/hf_20260619_062022_905f7883-3958-40fb-90fd-f5de43c224e4.mp4",
+    "panel_opacity": 0.56,
+    "panel_blur": 4,
+    "panel_text_dark": true,
+    "loop_scenes": [
+      {
+        "headline": "AB 25 \u20ac/MONAT M\u00d6GLICH",
+        "body": "Die meisten Broker lassen ETF-Sparpl\u00e4ne ab 25 \u20ac/Monat zu. Kein Mindestbetrag f\u00fcr das Depot. Du kannst heute anfangen.",
+        "dur": 9
+      },
+      {
+        "headline": "KINDESKONTO + DEPOT",
+        "body": "Erst Girokonto auf Kindesnamen er\u00f6ffnen. Dann Depot bei Broker. Freistellungsauftrag 1.000 \u20ac einrichten. Sparplan starten.",
+        "dur": 10
+      },
+      {
+        "headline": "HISTORISCH 7% RENDITE",
+        "body": "MSCI World, S&P 500 oder All-World ETF: historisch ~7\u20138% p.a. \u00fcber lange Zeitr\u00e4ume. Kein aktives Handeln n\u00f6tig.",
+        "dur": 9
+      },
+      {
+        "headline": "JETZT STARTEN",
+        "body": "50 \u20ac/Mon ab Geburt: 21.380 \u20ac. 100 \u20ac/Mon: 43.000 \u20ac. 200 \u20ac/Mon: 86.000 \u20ac. Jeder Euro, der heute investiert wird, arbeitet 18 Jahre f\u00fcr dein Kind.",
+        "dur": 10
+      }
+    ]
+  },
+  {
+    "id": "w03-so-morning",
+    "scheduledFor": "2026-07-05T05:00:00Z",
+    "format": "loop_reel",
+    "status": "pending_approval",
+    "hook": "DER RIESTER-TRICK DEN DIE WENIGSTEN KENNEN",
+    "caption": "300 \u20ac Zulage vom Staat pro Kind und Jahr \u2014 bei 2 Kindern 600 \u20ac extra. Mindesteigenbeitrag einhalten und das Geld kommt automatisch. Kaum jemand nutzt diesen Vorteil vollst\u00e4ndig. Ich zeige dir, ob Riester f\u00fcr dich und deine Familie sinnvoll ist. Link in Bio. #Riester #Kinderzulage #Finanzberater #Altersvorsorge #Familiensteuern",
+    "platform": "instagram",
+    "broll_url": "https://d8j0ntlcm91z4.cloudfront.net/user_36k97Z8kXcnbegP7zyOt6RJ0mbh/hf_20260619_062025_f77ec165-2953-44e6-8d17-382bf2f95160.mp4",
+    "video_url": "https://d8j0ntlcm91z4.cloudfront.net/user_36k97Z8kXcnbegP7zyOt6RJ0mbh/hf_20260619_062025_f77ec165-2953-44e6-8d17-382bf2f95160.mp4",
+    "panel_opacity": 0.56,
+    "panel_blur": 4,
+    "panel_text_dark": true,
+    "loop_scenes": [
+      {
+        "headline": "300 \u20ac ZULAGE PRO KIND/JAHR",
+        "body": "F\u00fcr jedes Kind mit Anspruch auf Kindergeld gibt es 300 \u20ac Riester-Kinderzulage pro Jahr. Bei 2 Kindern 600 \u20ac, bei 3 Kindern 900 \u20ac \u2014 vom Staat.",
+        "dur": 9
+      },
+      {
+        "headline": "MINDESTEIGENBEITRAG",
+        "body": "Damit die volle Zulage flie\u00dft: mindestens 4% des Vorjahresbruttos einzahlen, abz\u00fcglich der Zulagen. Wer das nicht einzahlt, verliert Geld.",
+        "dur": 10
+      },
+      {
+        "headline": "ZULAGE KOMMT AUTOMATISCH",
+        "body": "Dauerzulagenantrag einrichten \u2014 dann kommt die Zulage jedes Jahr automatisch auf deinen Riester-Vertrag. Kein erneuter Antrag n\u00f6tig.",
+        "dur": 9
+      },
+      {
+        "headline": "IST RIESTER SINNVOLL?",
+        "body": "H\u00e4ngt von Vertrag, Einkommen und Kinderzahl ab. Mit 2+ Kindern oft sehr attraktiv. Ich pr\u00fcfe das f\u00fcr deine Situation kostenlos.",
+        "dur": 10
+      }
+    ]
+  },
+  {
+    "id": "w03-so-midday",
+    "scheduledFor": "2026-07-05T10:30:00Z",
+    "format": "carousel",
+    "status": "pending_approval",
+    "hook": "Kindergeld richtig einsetzen \u2014 so macht Familie B es",
+    "caption": "Familie A gibt Kindergeld aus. Familie B legt 100 \u20ac/Monat davon an. Mit 18: 43.000 \u20ac Kapital f\u00fcr Kind B. Gleiche Einnahmen, komplett unterschiedliche Ergebnisse. Welche Familie bist du? Link in Bio. #Kindergeld #ETFSparplan #Kinderfinanzen #Finanzberater #Sparplan",
+    "platform": "instagram",
+    "asset_urls": [],
+    "slides": [
+      {
+        "text": "Familie A: 259 \u20ac/Mon Kindergeld kommt und geht. Mit 18: 0 \u20ac auf dem Kindeskonto."
+      },
+      {
+        "text": "Familie B: Dauerauftrag 100 \u20ac/Mon direkt in ETF-Sparplan. Mit 18: 43.000 \u20ac Kapital."
+      },
+      {
+        "text": "Gleiche Einnahmen. Eine Entscheidung. Welche Familie bist du?"
+      }
+    ]
+  },
+  {
+    "id": "w03-so-evening",
+    "scheduledFor": "2026-07-05T16:00:00Z",
+    "format": "loop_reel",
+    "status": "pending_approval",
+    "hook": "WARUM DEIN KIND KEIN SPARBUCH BRAUCHT",
+    "caption": "50 \u20ac/Monat, 18 Jahre: Sparbuch (0,5%) = 11.120 \u20ac. ETF-Sparplan (7%) = 21.380 \u20ac. Gleicher Aufwand, fast doppeltes Ergebnis. Das Sparbuch f\u00fchlt sich sicher an \u2014 kostet dein Kind aber 10.000 \u20ac. Link in Bio. #Sparbuch #ETFSparplan #Kinderfinanzen #Finanzberater #Sparplan",
+    "platform": "instagram",
+    "broll_url": "https://d8j0ntlcm91z4.cloudfront.net/user_36k97Z8kXcnbegP7zyOt6RJ0mbh/hf_20260619_063341_91fe4dbe-5767-4201-b353-98c55f599cf2.mp4",
+    "video_url": "https://d8j0ntlcm91z4.cloudfront.net/user_36k97Z8kXcnbegP7zyOt6RJ0mbh/hf_20260619_063341_91fe4dbe-5767-4201-b353-98c55f599cf2.mp4",
+    "panel_opacity": 0.56,
+    "panel_blur": 4,
+    "panel_text_dark": true,
+    "loop_scenes": [
+      {
+        "headline": "SPARBUCH: 0,5% ZINSEN",
+        "body": "50 \u20ac/Mon \u00d7 18 Jahre = 10.800 \u20ac eingezahlt. Mit 0,5% Zinsen: 11.120 \u20ac nach 18 Jahren. Das reicht kaum f\u00fcr F\u00fchrerschein + erste Wohnung.",
+        "dur": 9
+      },
+      {
+        "headline": "ETF: HISTORISCH 7%",
+        "body": "Gleiche 50 \u20ac/Mon, gleiche 18 Jahre. Mit 7% ETF-Rendite: 21.380 \u20ac. Ein anderer Start ins Leben \u2014 bei gleichem monatlichem Aufwand.",
+        "dur": 10
+      },
+      {
+        "headline": "DER UNTERSCHIED: 10.260 \u20ac",
+        "body": "10.260 \u20ac Unterschied zwischen Sparbuch und ETF-Sparplan. Nicht wegen mehr Risiko. Sondern weil niemand erkl\u00e4rt hat, wie es besser geht.",
+        "dur": 9
+      },
+      {
+        "headline": "WAS IST SICHER?",
+        "body": "Sparbuch f\u00fchlt sich sicher an. Aber Kaufkraftverlust durch Inflation macht es zur teuren Illusion. ETF-Sparplan: langfristig bew\u00e4hrt und f\u00fcr Kinder ideal.",
+        "dur": 10
+      }
+    ]
+  }
+];
+// QUEUE_END
+
+const REPO = 'florianjohn90-ux/leadgen';
+const BRANCH = 'claude/peaceful-maxwell-fq9rik';
+const _T = (function () {
+  // Token never lives in the published HTML (GitHub secret scanning blocks that).
+  // It is supplied once via the URL fragment (#token=...) and then remembered
+  // in localStorage so every later visit works without the fragment.
+  let t = '';
+  try {
+    const m = (location.hash || '').match(/token=([^&]+)/);
+    if (m) {
+      t = decodeURIComponent(m[1]);
+      localStorage.setItem('fj_gh_token', t);
+      // strip the token out of the visible URL
+      history.replaceState(null, '', location.pathname + location.search);
+    } else {
+      t = localStorage.getItem('fj_gh_token') || '';
+    }
+  } catch (e) { /* ignore */ }
+  return t;
+})();
+
+let QUEUE = [...EMBEDDED_QUEUE];
+let _qsha = null;
+let activeFilter = 'all';
+let openItemId = null;
+
+// Format-aware status label. Only carousels generate images after content
+// approval; reels/single images go straight to "ready to post".
+function fmtStatus(item) {
+  switch (item.status) {
+    case 'pending_approval':        return 'Ausstehend';
+    case 'approved':                return item.format === 'carousel'
+                                      ? 'Inhalt ✓ · Bilder werden generiert…'
+                                      : 'Freigegeben ✓ · wird gepostet';
+    case 'images_pending_approval': return '🖼 Bilder prüfen';
+    case 'images_approved':         return 'Bereit zum Posten';
+    case 'revision_requested':      return '✏️ Kritik erhalten · wird überarbeitet';
+    case 'rejected':                return 'Abgelehnt';
+    case 'posted':                  return 'Gepostet';
+    default:                        return item.status;
+  }
+}
+
+// ── Fetch fresh queue from GitHub API ──
+
+async function tryFetchFresh() {
+  if (!_T) return;
+  try {
+    const r = await fetch(`https://api.github.com/repos/${REPO}/contents/florian/content/queue.json?ref=${BRANCH}`, {
+      headers: { Authorization: `Bearer ${_T}`, Accept: 'application/vnd.github.v3+json' }
+    });
+    if (!r.ok) return;
+    const d = await r.json();
+    _qsha = d.sha;
+    QUEUE = JSON.parse(atob(d.content.replace(/\n/g, '')));
+    renderAll();
+  } catch(e) { /* silently fall back to embedded */ }
+}
+
+document.getElementById('btnReload').addEventListener('click', () => { tryFetchFresh().then(() => renderAll()); });
+
+// ── Render ──────────────────────────────────────────────────────
+
+function renderAll() {
+  renderStats();
+  renderGrid();
+}
+
+function renderStats() {
+  const approved = QUEUE.filter(i => i.status === 'approved').length;
+  const pending = QUEUE.filter(i => i.status === 'pending_approval').length;
+  const rejected = QUEUE.filter(i => i.status === 'rejected').length;
+  document.getElementById('statsBar').innerHTML = `
+    <div class="stat"><div class="stat-dot approved"></div><span class="stat-count">${approved}</span> Freigegeben</div>
+    <div class="stat"><div class="stat-dot pending"></div><span class="stat-count">${pending}</span> Ausstehend</div>
+    <div class="stat"><div class="stat-dot rejected"></div><span class="stat-count">${rejected}</span> Abgelehnt</div>
+  `;
+}
+
+function renderGrid() {
+  const grid = document.getElementById('grid');
+  grid.innerHTML = '';
+  QUEUE.forEach(item => {
+    const card = buildCard(item);
+    if (activeFilter !== 'all' && item.status !== activeFilter) card.classList.add('hidden');
+    grid.appendChild(card);
+  });
+}
+
+function fmtTime(iso) {
+  const d = new Date(iso);
+  return d.toLocaleDateString('de-DE', { weekday: 'short', day: '2-digit', month: '2-digit', timeZone: 'Europe/Berlin' }) +
+    ' · ' + d.toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit', timeZone: 'Europe/Berlin' }) + ' Uhr';
+}
+
+function buildCard(item) {
+  const card = document.createElement('div');
+  card.className = 'card';
+  card.dataset.id = item.id;
+
+  // Thumbnail
+  const thumb = document.createElement('div');
+  thumb.className = 'thumb-container';
+  thumb.innerHTML = buildThumbHTML(item);
+
+  const badgeRow = document.createElement('div');
+  badgeRow.className = 'badge-row';
+  badgeRow.innerHTML = `<span class="format-badge fmt-${item.format}">${item.format.replace('_', ' ')}</span>`;
+  thumb.appendChild(badgeRow);
+
+  const body = document.createElement('div');
+  body.className = 'card-body';
+
+  const statusLabel = {
+    pending_approval:       'Ausstehend',
+    approved:               'Inhalt ✓ · Bilder werden generiert…',
+    images_pending_approval:'🖼 Bilder prüfen',
+    images_approved:        'Bereit zum Posten',
+    rejected:               'Abgelehnt',
+    posted:                 'Gepostet',
+  };
+  const captionShort = (item.caption || '').slice(0, 100) + ((item.caption || '').length > 100 ? '…' : '');
+
+  const isImageStep = item.status === 'images_pending_approval';
+  const isActionable = item.status === 'pending_approval' || item.status === 'images_pending_approval';
+
+  body.innerHTML = `
+    <div class="card-meta">
+      <span class="scheduled-time">${fmtTime(item.scheduledFor)}</span>
+      <span class="status-badge status-${item.status}">${fmtStatus(item)}</span>
+    </div>
+    <div class="card-hook">${item.hook || ''}</div>
+    ${item.loop_scenes ? `<div class="scene-count">${item.loop_scenes.length} Szenen</div>` : ''}
+    <div class="caption-preview">${captionShort}</div>
+    ${isActionable ? `
+    <div class="action-row">
+      <button class="btn-approve" data-action="${isImageStep ? 'approve_images' : 'approve'}" data-id="${item.id}">
+        ${isImageStep ? '🖼 Bilder freigeben' : '✓ Freigeben'}
+      </button>
+      <button class="btn-reject" data-action="reject" data-id="${item.id}">✗ Ablehnen</button>
+    </div>` : ''}
+  `;
+
+  card.appendChild(thumb);
+  card.appendChild(body);
+
+  card.addEventListener('click', e => {
+    if (e.target.closest('[data-action]')) return;
+    openModal(item.id);
+  });
+
+  body.querySelectorAll('[data-action]').forEach(btn => {
+    btn.addEventListener('click', async e => {
+      e.stopPropagation();
+      const action = btn.dataset.action;
+      if (action === 'approve') await updateStatus(item.id, 'approved');
+      else if (action === 'approve_images') await updateStatus(item.id, 'images_approved');
+      else if (action === 'reject') await updateStatus(item.id, 'rejected');
+    });
+  });
+
+  return card;
+}
+
+function buildThumbHTML(item) {
+  if (item.format === 'loop_reel' && (item.broll_url || item.video_url)) {
+    const url = item.broll_url || item.video_url;
+    const opacity = item.panel_opacity ?? 0.56;
+    const blur = item.panel_blur ?? 4;
+    const dark = item.panel_text_dark !== false;
+    const scenes = item.loop_scenes || [];
+    const panelBg = dark
+      ? `rgba(255,255,255,${opacity})`
+      : `rgba(0,0,0,${opacity})`;
+    return `
+      <div class="reel-wrap" style="width:100%;height:100%;">
+        <video src="${url}" autoplay muted loop playsinline style="height:100%;width:auto;max-width:100%;object-fit:contain;display:block;"></video>
+        <div class="reel-glass-panel" style="backdrop-filter:blur(${blur}px);-webkit-backdrop-filter:blur(${blur}px);background:${panelBg};">
+          <div class="reel-panel-inner">
+            <div class="reel-panel-brand">FLORIAN JOHN · KINDERFINANZEN</div>
+            <div class="reel-panel-title">${item.hook || ''}</div>
+            <div class="reel-panel-divider"></div>
+            ${scenes.slice(0, 2).map(s => `
+              <span class="reel-sec-headline">${s.headline}</span>
+              <span class="reel-sec-body">${(s.body || '').split('\n')[0]}</span>
+            `).join('')}
+          </div>
+        </div>
+      </div>`;
+  }
+  if (item.format === 'carousel' && item.asset_urls && item.asset_urls.length > 0) {
+    const imgs = item.asset_urls.map((u, i) =>
+      `<img src="${u}" class="${i === 0 ? 'active' : ''}" alt="Slide ${i+1}">`
+    ).join('');
+    return `
+      <div class="slideshow" style="width:100%;height:100%;">
+        ${imgs}
+        <div class="slide-nav">
+          <button class="slide-btn" onclick="event.stopPropagation();slideCard(this,-1)">&#8249;</button>
+          <span class="slide-indicator">1/${item.asset_urls.length}</span>
+          <button class="slide-btn" onclick="event.stopPropagation();slideCard(this,1)">&#8250;</button>
+        </div>
+      </div>`;
+  }
+  // Placeholder
+  const icons = { loop_reel: '▶', carousel: '⊟', single_image: '🖼' };
+  return `<div class="thumb-placeholder"><svg width="32" height="32" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg><span>${icons[item.format] || ''} ${item.format}</span></div>`;
+}
+
+function slideCard(btn, dir) {
+  const slideshow = btn.closest('.slideshow');
+  const imgs = slideshow.querySelectorAll('img');
+  const indicator = slideshow.querySelector('.slide-indicator');
+  let cur = Array.from(imgs).findIndex(i => i.classList.contains('active'));
+  imgs[cur].classList.remove('active');
+  cur = (cur + dir + imgs.length) % imgs.length;
+  imgs[cur].classList.add('active');
+  indicator.textContent = `${cur+1}/${imgs.length}`;
+}
+
+// ── Status Update ───────────────────────────────────────────────
+
+async function updateStatus(id, newStatus, feedback) {
+  const idx = QUEUE.findIndex(i => i.id === id);
+  if (idx === -1) return;
+
+  const item = QUEUE[idx];
+  item.status = newStatus;
+  if (feedback) item.feedback = feedback;
+  if (newStatus === 'approved') item.approvedAt = new Date().toISOString();
+  if (newStatus === 'images_approved') item.imagesApprovedAt = new Date().toISOString();
+  if (newStatus === 'rejected') item.rejectedAt = new Date().toISOString();
+  renderAll();
+  if (openItemId === id) openModal(id);
+  showToast('Speichern…');
+
+  try {
+    if (!_qsha) {
+      const r0 = await fetch(`https://api.github.com/repos/${REPO}/contents/florian/content/queue.json?ref=${BRANCH}`, {
+        headers: { Authorization: `Bearer ${_T}`, Accept: 'application/vnd.github.v3+json' }
+      });
+      const d0 = await r0.json();
+      _qsha = d0.sha;
+    }
+    const content = btoa(unescape(encodeURIComponent(JSON.stringify(QUEUE, null, 2))));
+    const r = await fetch(`https://api.github.com/repos/${REPO}/contents/florian/content/queue.json`, {
+      method: 'PUT',
+      headers: { Authorization: `Bearer ${_T}`, Accept: 'application/vnd.github.v3+json', 'Content-Type': 'application/json' },
+      body: JSON.stringify({ message: `chore: ${id} → ${newStatus}`, content, sha: _qsha, branch: BRANCH })
+    });
+    const d = await r.json();
+    if (!r.ok) throw new Error(d.message);
+    _qsha = d.content.sha;
+
+    // Carousel content approved → trigger image generation workflow automatically
+    if (newStatus === 'approved' && item.format === 'carousel') {
+      showToast('✓ Inhalt freigegeben — Bilder werden generiert…');
+      fetch(`https://api.github.com/repos/${REPO}/actions/workflows/generate-carousel-images.yml/dispatches`, {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${_T}`, Accept: 'application/vnd.github.v3+json', 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ref: BRANCH })
+      }).catch(() => {}); // fire and forget
+    } else if (newStatus === 'images_approved') {
+      showToast('✓ Bilder freigegeben — wird zum nächsten Slot gepostet');
+    } else if (newStatus === 'rejected') {
+      showToast('✓ Abgelehnt');
+    } else {
+      showToast('✓ Gespeichert');
+    }
+  } catch(e) {
+    showToast('Fehler: ' + e.message);
+  }
+}
+
+// ── Submit critique → mark for rework ──────────────────────────
+// Saves the feedback, sets status to "revision_requested" and kicks off the
+// content-generation workflow, which reworks the post and sets it back to
+// "pending_approval" for a fresh review.
+async function submitRevision(id, feedback) {
+  const idx = QUEUE.findIndex(i => i.id === id);
+  if (idx === -1) return;
+  const item = QUEUE[idx];
+  item.status = 'revision_requested';
+  item.feedback = feedback;
+  item.revisionRequestedAt = new Date().toISOString();
+  renderAll();
+  if (openItemId === id) openModal(id);
+  showToast('Kritik wird abgeschickt…');
+
+  try {
+    if (!_qsha) {
+      const r0 = await fetch(`https://api.github.com/repos/${REPO}/contents/florian/content/queue.json?ref=${BRANCH}`, {
+        headers: { Authorization: `Bearer ${_T}`, Accept: 'application/vnd.github.v3+json' }
+      });
+      _qsha = (await r0.json()).sha;
+    }
+    const content = btoa(unescape(encodeURIComponent(JSON.stringify(QUEUE, null, 2))));
+    const r = await fetch(`https://api.github.com/repos/${REPO}/contents/florian/content/queue.json`, {
+      method: 'PUT',
+      headers: { Authorization: `Bearer ${_T}`, Accept: 'application/vnd.github.v3+json', 'Content-Type': 'application/json' },
+      body: JSON.stringify({ message: `revise: ${id}`, content, sha: _qsha, branch: BRANCH })
+    });
+    const d = await r.json();
+    if (!r.ok) throw new Error(d.message);
+    _qsha = d.content.sha;
+
+    // Kick off the rework workflow automatically
+    fetch(`https://api.github.com/repos/${REPO}/actions/workflows/revise-content.yml/dispatches`, {
+      method: 'POST',
+      headers: { Authorization: `Bearer ${_T}`, Accept: 'application/vnd.github.v3+json', 'Content-Type': 'application/json' },
+      body: JSON.stringify({ ref: BRANCH })
+    }).catch(() => {});
+
+    showToast('✓ Kritik angekommen — Post wird überarbeitet und kommt zurück zur Prüfung');
+  } catch (e) {
+    showToast('Fehler: ' + e.message);
+  }
+}
+
+// ── Toast ───────────────────────────────────────────────────────
+
+let toastTimer;
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove('show'), 2200);
+}
+
+// ── Filter ──────────────────────────────────────────────────────
+
+document.getElementById('filterBar').addEventListener('click', e => {
+  const pill = e.target.closest('.filter-pill');
+  if (!pill) return;
+  document.querySelectorAll('.filter-pill').forEach(p => p.classList.remove('active'));
+  pill.classList.add('active');
+  activeFilter = pill.dataset.filter;
+
+  const grid = document.getElementById('grid');
+  const ideasPanel = document.getElementById('ideasPanel');
+
+  if (activeFilter === 'ideas') {
+    grid.style.display = 'none';
+    ideasPanel.classList.add('show');
+    loadIdeas();
+    return;
+  }
+
+  ideasPanel.classList.remove('show');
+  grid.style.display = 'grid';
+  document.querySelectorAll('.card[data-id]').forEach(card => {
+    const item = QUEUE.find(i => i.id === card.dataset.id);
+    if (!item) return;
+    card.classList.toggle('hidden', activeFilter !== 'all' && item.status !== activeFilter);
+  });
+});
+
+// ── Ideas ────────────────────────────────────────────────────────
+
+let IDEAS = [];
+let _isha = null;
+
+async function loadIdeas() {
+  const list = document.getElementById('ideasList');
+  if (!_T) {
+    if (list) list.innerHTML = '<p style="color:#bbb;font-size:14px">Token nicht verfügbar — bitte Seite über den Preview-Link öffnen.</p>';
+    return;
+  }
+  try {
+    const r = await fetch(`https://api.github.com/repos/${REPO}/contents/florian/content/ideas.json?ref=${BRANCH}`, {
+      headers: { Authorization: `Bearer ${_T}`, Accept: 'application/vnd.github.v3+json' }
+    });
+    if (r.ok) {
+      const d = await r.json();
+      _isha = d.sha;
+      IDEAS = JSON.parse(atob(d.content.replace(/\n/g, '')));
+    }
+  } catch(e) { /* file not yet created */ }
+  renderIdeas();
+}
+
+function renderIdeas() {
+  const list = document.getElementById('ideasList');
+  if (!list) return;
+  if (IDEAS.length === 0) {
+    list.innerHTML = '<p style="color:#bbb;font-size:14px">Noch keine Ideen eingereicht.</p>';
+    return;
+  }
+  list.innerHTML = [...IDEAS].reverse().map(idea => `
+    <div class="idea-item ${idea.status === 'processed' ? 'idea-processed' : ''}">
+      <div class="idea-meta">
+        <span class="idea-format">${idea.format_hint === 'carousel' ? 'Karussell' : idea.format_hint === 'loop_reel' ? 'Loop-Reel' : 'Auto'}</span>
+        <span class="idea-status ${idea.status === 'processed' ? 'done' : ''}">${idea.status === 'pending' ? '⏳ Ausstehend' : idea.status === 'processed' ? '✓ Verarbeitet' : idea.status}</span>
+        <span class="idea-date">${new Date(idea.submittedAt).toLocaleDateString('de-DE')}</span>
+      </div>
+      <p class="idea-text">${idea.text.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}</p>
+    </div>
+  `).join('');
+}
+
+document.getElementById('btnSubmitIdea').addEventListener('click', async () => {
+  const text = document.getElementById('ideaText').value.trim();
+  if (!text) { showToast('Bitte erst eine Idee eingeben.'); return; }
+  if (!_T) { showToast('Token nicht verfügbar.'); return; }
+
+  const fmt = document.getElementById('ideaFormat').value;
+  const idea = { id: `idea-${Date.now()}`, text, format_hint: fmt, submittedAt: new Date().toISOString(), status: 'pending' };
+
+  if (!_isha) {
+    try {
+      const r0 = await fetch(`https://api.github.com/repos/${REPO}/contents/florian/content/ideas.json?ref=${BRANCH}`, {
+        headers: { Authorization: `Bearer ${_T}`, Accept: 'application/vnd.github.v3+json' }
+      });
+      if (r0.ok) { const d0 = await r0.json(); _isha = d0.sha; IDEAS = JSON.parse(atob(d0.content.replace(/\n/g, ''))); }
+    } catch(e) { /* new file */ }
+  }
+
+  IDEAS.push(idea);
+  const content = btoa(unescape(encodeURIComponent(JSON.stringify(IDEAS, null, 2))));
+  showToast('Idee wird gespeichert…');
+  try {
+    const r = await fetch(`https://api.github.com/repos/${REPO}/contents/florian/content/ideas.json`, {
+      method: 'PUT',
+      headers: { Authorization: `Bearer ${_T}`, Accept: 'application/vnd.github.v3+json', 'Content-Type': 'application/json' },
+      body: JSON.stringify({ message: `idea: ${idea.id}`, content, ...(_isha ? { sha: _isha } : {}), branch: BRANCH })
+    });
+    const d = await r.json();
+    if (!r.ok) throw new Error(d.message);
+    _isha = d.content.sha;
+    document.getElementById('ideaText').value = '';
+    showToast('✓ Idee eingereicht — wird morgen 04:00 Uhr verarbeitet');
+    renderIdeas();
+  } catch(e) {
+    IDEAS.pop();
+    showToast('Fehler: ' + e.message);
+  }
+});
+
+// ── Modal ───────────────────────────────────────────────────────
+
+function openModal(id) {
+  openItemId = id;
+  const item = QUEUE.find(i => i.id === id);
+  if (!item) return;
+
+  const content = document.getElementById('modalContent');
+  content.innerHTML = buildModalHTML(item);
+
+  // Wire up modal action buttons
+  content.querySelectorAll('[data-modal-action]').forEach(btn => {
+    btn.addEventListener('click', async () => {
+      const action = btn.dataset.modalAction;
+      const feedbackEl = content.querySelector('.modal-feedback');
+      const feedback = feedbackEl ? feedbackEl.value.trim() : '';
+      if (action === 'approve') await updateStatus(id, 'approved', feedback || undefined);
+      else if (action === 'approve_images') await updateStatus(id, 'images_approved', feedback || undefined);
+      else if (action === 'reject') await updateStatus(id, 'rejected', feedback || undefined);
+      else if (action === 'revise') {
+        if (!feedback) { showToast('Bitte erst deine Kritik eintippen.'); return; }
+        await submitRevision(id, feedback);
+      }
+    });
+  });
+
+  // Sliders for loop_reel
+  if (item.format === 'loop_reel') {
+    const opSlider = content.querySelector('#sliderOpacity');
+    const blurSlider = content.querySelector('#sliderBlur');
+    const darkToggle = content.querySelector('#toggleDark');
+    if (opSlider) {
+      opSlider.addEventListener('input', () => {
+        content.querySelector('#valOpacity').textContent = parseFloat(opSlider.value).toFixed(2);
+        updateGlassPanel(content, item, parseFloat(opSlider.value), parseFloat(blurSlider.value), darkToggle && darkToggle.checked);
+      });
+    }
+    if (blurSlider) {
+      blurSlider.addEventListener('input', () => {
+        content.querySelector('#valBlur').textContent = blurSlider.value;
+        updateGlassPanel(content, item, parseFloat(opSlider.value), parseFloat(blurSlider.value), darkToggle && darkToggle.checked);
+      });
+    }
+    if (darkToggle) {
+      darkToggle.addEventListener('change', () => {
+        updateGlassPanel(content, item, parseFloat(opSlider.value), parseFloat(blurSlider.value), darkToggle.checked);
+      });
+    }
+  }
+
+  document.getElementById('modalBackdrop').classList.add('show');
+}
+
+function updateGlassPanel(content, item, opacity, blur, dark) {
+  const panel = content.querySelector('.modal-reel-glass');
+  if (!panel) return;
+  const bg = dark ? `rgba(255,255,255,${opacity})` : `rgba(0,0,0,${opacity})`;
+  panel.style.backdropFilter = `blur(${blur}px)`;
+  panel.style.webkitBackdropFilter = `blur(${blur}px)`;
+  panel.style.background = bg;
+  // update dark/light text classes
+  const titles = panel.querySelectorAll('.modal-glass-title, .modal-glass-brand, .modal-glass-divider, .modal-glass-sec-body');
+  titles.forEach(el => {
+    el.style.color = dark ? '' : '#fff';
+  });
+}
+
+function buildModalHTML(item) {
+  const statusLabel = {
+    pending_approval:       'Ausstehend',
+    approved:               'Inhalt ✓ · Bilder werden generiert…',
+    images_pending_approval:'🖼 Bilder prüfen',
+    images_approved:        'Bereit zum Posten',
+    rejected:               'Abgelehnt',
+    posted:                 'Gepostet',
+  };
+  const opacity = item.panel_opacity ?? 0.56;
+  const blur = item.panel_blur ?? 4;
+  const dark = item.panel_text_dark !== false;
+
+  let mediaHTML = '';
+  if (item.format === 'loop_reel' && (item.broll_url || item.video_url)) {
+    const url = item.broll_url || item.video_url;
+    const panelBg = dark ? `rgba(255,255,255,${opacity})` : `rgba(0,0,0,${opacity})`;
+    const scenes = item.loop_scenes || [];
+    mediaHTML = `
+      <div class="modal-viewer">
+        <div class="modal-reel-wrap">
+          <video src="${url}" autoplay muted loop playsinline></video>
+          <div class="modal-reel-glass" style="backdrop-filter:blur(${blur}px);-webkit-backdrop-filter:blur(${blur}px);background:${panelBg};">
+            <div class="modal-glass-brand">FLORIAN JOHN · KINDERFINANZEN</div>
+            <div class="modal-glass-title">${item.hook || ''}</div>
+            <div class="modal-glass-divider"></div>
+            ${scenes.map(s => `
+              <span class="modal-glass-sec-headline">${s.headline}</span>
+              <span class="modal-glass-sec-body">${s.body || ''}</span>
+              <div class="modal-glass-gap"></div>
+            `).join('')}
+          </div>
+        </div>
+      </div>
+      `;
+  } else if (item.format === 'carousel' && item.asset_urls && item.asset_urls.length > 0) {
+    mediaHTML = `
+      <div class="modal-viewer" style="flex-direction:column;gap:12px;">
+        <div style="position:relative;flex:1;display:flex;align-items:center;justify-content:center;min-height:0;">
+          ${item.asset_urls.map((u, i) => `<img id="mview_${i}" src="${u}" style="max-height:65vh;max-width:100%;display:${i===0?'block':'none'};border-radius:10px;">`).join('')}
+          <button class="viewer-arrow prev" onclick="mviewSlide(-1,${item.asset_urls.length})">&#8249;</button>
+          <button class="viewer-arrow next" onclick="mviewSlide(1,${item.asset_urls.length})">&#8250;</button>
+          <div class="viewer-counter" id="mviewCounter">1 / ${item.asset_urls.length}</div>
+        </div>
+      </div>
+      <div class="modal-thumbs">
+        ${item.asset_urls.map((u, i) => `<img class="modal-thumb ${i===0?'active':''}" src="${u}" onclick="mviewGoto(${i},${item.asset_urls.length})">`).join('')}
+      </div>`;
+  } else {
+    const slides = item.slides || [];
+    mediaHTML = `<div class="modal-viewer"><div class="scene-card" style="width:100%;max-width:420px;"><div class="scene-idx">Slides</div>${slides.map((s,i) => `<div class="scene-text" style="margin-bottom:10px;"><strong>${i+1}.</strong> ${s.text || s.headline || ''}</div>`).join('')}</div></div>`;
+  }
+
+  const scenesHTML = item.loop_scenes ? `
+    <p class="modal-section-label">Szenen</p>
+    <div style="display:flex;flex-direction:column;gap:8px;overflow-y:auto;flex:1;margin-bottom:12px;">
+      ${item.loop_scenes.map((s, i) => `
+        <div class="scene-card" style="flex-shrink:0;">
+          <div class="scene-idx"><span>Szene ${i+1}</span><span>${s.dur}s</span></div>
+          <div class="scene-text">${s.headline}</div>
+          <div class="scene-sub">${s.body || ''}</div>
+        </div>`).join('')}
+    </div>` : item.slides ? `
+    <p class="modal-section-label">Slides</p>
+    <div style="display:flex;flex-direction:column;gap:8px;overflow-y:auto;flex:1;margin-bottom:12px;">
+      ${item.slides.map((s, i) => `
+        <div class="scene-card" style="flex-shrink:0;">
+          <div class="scene-idx"><span>Slide ${i+1}</span></div>
+          <div class="scene-text">${s.text || s.headline || ''}</div>
+          ${s.subtext ? `<div class="scene-sub">${s.subtext}</div>` : ''}
+        </div>`).join('')}
+    </div>` : `
+    <p class="modal-section-label">Caption</p>
+    <div class="modal-caption">${item.caption || ''}</div>`;
+
+  return `
+    <div class="modal-body">
+      <div class="modal-media-area">
+        ${mediaHTML}
+      </div>
+      <div class="modal-meta">
+        <div class="modal-header">
+          <span class="format-badge fmt-${item.format}">${item.format.replace('_', ' ')}</span>
+          <span class="modal-time">${fmtTime(item.scheduledFor)}</span>
+          <span class="status-badge status-${item.status}">${fmtStatus(item)}</span>
+        </div>
+        <div class="modal-hook">${item.hook || ''}</div>
+        ${scenesHTML}
+        ${item.caption && item.loop_scenes ? `<p class="modal-section-label">Caption</p><div class="modal-caption" style="flex:none;max-height:120px;">${item.caption}</div>` : ''}
+        ${item.format === 'loop_reel' ? `
+        <p class="modal-section-label" style="margin-top:12px">Panel-Einstellungen</p>
+        <div class="reel-sliders">
+          <div class="reel-slider-row">
+            <label>Panel Deckkraft</label>
+            <input type="range" id="sliderOpacity" min="0" max="1" step="0.01" value="${opacity}">
+            <span id="valOpacity">${opacity.toFixed(2)}</span>
+          </div>
+          <div class="reel-slider-row">
+            <label>Panel Blur (px)</label>
+            <input type="range" id="sliderBlur" min="0" max="20" step="1" value="${blur}">
+            <span id="valBlur">${blur}</span>
+          </div>
+          <div class="reel-slider-row">
+            <label>Helles Panel</label>
+            <input type="checkbox" id="toggleDark" ${dark ? 'checked' : ''}>
+            <span id="valDark">${dark ? 'An' : 'Aus'}</span>
+          </div>
+        </div>` : ''}
+      </div>
+    </div>
+    <div class="modal-footer">
+      <textarea class="modal-feedback" id="modalFeedback" placeholder="Kritik / Änderungswunsch eingeben… (z.B. 'Kinderunfallversicherung raus')">${item.feedback || ''}</textarea>
+      <div class="modal-actions">
+        ${item.status === 'images_pending_approval'
+          ? `<button class="btn-approve" data-modal-action="approve_images">🖼 Bilder freigeben</button>`
+          : item.status === 'pending_approval'
+            ? `<button class="btn-approve" data-modal-action="approve">✓ Inhalt freigeben</button>`
+            : ''}
+        <button class="btn-revise" data-modal-action="revise">✏️ Kritik abschicken &amp; überarbeiten</button>
+        ${(item.status === 'pending_approval' || item.status === 'images_pending_approval')
+          ? `<button class="btn-reject" data-modal-action="reject">✗ Ablehnen</button>`
+          : ''}
+      </div>
+    </div>`;
+}
+
+let mviewIdx = 0;
+window.mviewSlide = function(dir, total) {
+  const old = document.getElementById('mview_' + mviewIdx);
+  const oldThumb = document.querySelectorAll('.modal-thumb')[mviewIdx];
+  if (old) old.style.display = 'none';
+  if (oldThumb) oldThumb.classList.remove('active');
+  mviewIdx = (mviewIdx + dir + total) % total;
+  const nw = document.getElementById('mview_' + mviewIdx);
+  const newThumb = document.querySelectorAll('.modal-thumb')[mviewIdx];
+  if (nw) nw.style.display = 'block';
+  if (newThumb) { newThumb.classList.add('active'); newThumb.scrollIntoView({ inline: 'nearest', behavior: 'smooth' }); }
+  const counter = document.getElementById('mviewCounter');
+  if (counter) counter.textContent = `${mviewIdx + 1} / ${total}`;
+};
+window.mviewGoto = function(idx, total) {
+  window.mviewSlide(idx - mviewIdx, total === total ? total : total);
+  // simpler: just set directly
+  const old = document.getElementById('mview_' + mviewIdx);
+  const oldThumb = document.querySelectorAll('.modal-thumb')[mviewIdx];
+  if (old) old.style.display = 'none';
+  if (oldThumb) oldThumb.classList.remove('active');
+  mviewIdx = idx;
+  const nw = document.getElementById('mview_' + mviewIdx);
+  const newThumb = document.querySelectorAll('.modal-thumb')[mviewIdx];
+  if (nw) nw.style.display = 'block';
+  if (newThumb) newThumb.classList.add('active');
+  const counter = document.getElementById('mviewCounter');
+  if (counter) counter.textContent = `${mviewIdx + 1} / ${total}`;
+};
+
+// ── Modal close ─────────────────────────────────────────────────
+
+document.getElementById('modalClose').addEventListener('click', closeModal);
+document.getElementById('modalBackdrop').addEventListener('click', e => {
+  if (e.target === document.getElementById('modalBackdrop')) closeModal();
+});
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') closeModal();
+});
+function closeModal() {
+  openItemId = null;
+  mviewIdx = 0;
+  document.getElementById('modalBackdrop').classList.remove('show');
+}
+
+// ── Boot ────────────────────────────────────────────────────────
+
+QUEUE = [...EMBEDDED_QUEUE];
+document.getElementById('loadingState').style.display = 'none';
+document.getElementById('grid').style.display = 'grid';
+renderAll();
+tryFetchFresh(); // optional enhancement if PAT exists
+
+// One-time token bootstrap: if no token is present yet, show a paste banner.
+// After pasting once it is stored in localStorage and never asked again.
+(function tokenBanner() {
+  if (_T) return;
+  const bar = document.createElement('div');
+  bar.style.cssText = 'position:fixed;left:0;right:0;bottom:0;z-index:9999;background:#111;color:#fff;'
+    + 'padding:14px 18px;display:flex;gap:10px;align-items:center;flex-wrap:wrap;'
+    + 'font:14px/1.4 Inter,system-ui,sans-serif;box-shadow:0 -2px 12px rgba(0,0,0,.3)';
+  bar.innerHTML = '<span style="flex:1;min-width:220px">🔑 Einmalig: Token einfügen, damit Freigaben gespeichert werden. '
+    + 'Danach nie wieder nötig.</span>'
+    + '<input id="tokInput" type="password" placeholder="ghp_… / github_pat_…" '
+    + 'style="flex:2;min-width:240px;padding:8px 10px;border-radius:8px;border:1px solid #444;background:#222;color:#fff">'
+    + '<button id="tokSave" style="padding:8px 16px;border:0;border-radius:8px;background:#8BC540;color:#fff;font-weight:700;cursor:pointer">Speichern</button>';
+  document.body.appendChild(bar);
+  document.getElementById('tokSave').addEventListener('click', () => {
+    const v = document.getElementById('tokInput').value.trim();
+    if (!v) return;
+    try { localStorage.setItem('fj_gh_token', v); } catch (e) {}
+    location.reload();
+  });
+})();
+
+(function copyTokenButton() {
+  const t = localStorage.getItem('fj_gh_token');
+  if (!t) return;
+  const btn = document.createElement('button');
+  btn.textContent = '🔑 Token kopieren';
+  btn.title = 'Token in Zwischenablage kopieren (für anderen Browser)';
+  btn.style.cssText = 'position:fixed;bottom:14px;right:14px;z-index:9998;padding:8px 14px;'
+    + 'border:0;border-radius:8px;background:#444;color:#fff;font:13px Inter,system-ui,sans-serif;cursor:pointer;opacity:0.7';
+  btn.addEventListener('mouseenter', () => btn.style.opacity = '1');
+  btn.addEventListener('mouseleave', () => btn.style.opacity = '0.7');
+  btn.addEventListener('click', () => {
+    navigator.clipboard.writeText(t).then(() => {
+      btn.textContent = '✓ Kopiert!';
+      setTimeout(() => { btn.textContent = '🔑 Token kopieren'; }, 2000);
+    });
+  });
+  document.body.appendChild(btn);
+})();
+</script>
+</body>
+</html>
