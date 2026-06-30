@@ -1169,6 +1169,8 @@
           <option value="auto">Format: Automatisch</option>
           <option value="carousel">Karussell (Slides)</option>
           <option value="loop_reel">Loop-Reel (Video)</option>
+          <option value="single_image">Einzelbild (Feed)</option>
+          <option value="story">Story</option>
         </select>
         <button class="btn-submit-idea" id="btnSubmitIdea">Einreichen →</button>
       </div>
@@ -1237,7 +1239,7 @@ let openItemId = null;
 function fmtStatus(item) {
   switch (item.status) {
     case 'pending_approval':        return 'Ausstehend';
-    case 'approved':                return item.format === 'carousel'
+    case 'approved':                return ['carousel','single_image','story'].includes(item.format)
                                       ? 'Inhalt ✓ · Bilder werden generiert…'
                                       : 'Freigegeben ✓ · wird gepostet';
     case 'images_pending_approval': return '🖼 Bilder prüfen';
@@ -1313,7 +1315,8 @@ function buildCard(item) {
 
   const badgeRow = document.createElement('div');
   badgeRow.className = 'badge-row';
-  badgeRow.innerHTML = `<span class="format-badge fmt-${item.format}">${item.format.replace('_', ' ')}</span>`;
+  const fmtLabels = { carousel: 'Karussell', loop_reel: 'Loop-Reel', single_image: 'Einzelbild', story: 'Story', reel_upload: 'Reel' };
+  badgeRow.innerHTML = `<span class="format-badge fmt-${item.format}">${fmtLabels[item.format] || item.format.replace('_', ' ')}</span>`;
   thumb.appendChild(badgeRow);
 
   const body = document.createElement('div');
@@ -1410,8 +1413,26 @@ function buildThumbHTML(item) {
         </div>
       </div>`;
   }
+  // Einzelbild & Story: gerendertes Bild zeigen, sobald vorhanden …
+  if ((item.format === 'single_image' || item.format === 'story')) {
+    const img = item.asset_url || (item.asset_urls && item.asset_urls[0]);
+    if (img) {
+      return `<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;background:#000;">
+        <img src="${img}" alt="${item.format}" style="height:100%;width:auto;max-width:100%;object-fit:contain;display:block;">
+      </div>`;
+    }
+    // … sonst eine Text-Vorschau aus dem ersten Slide (vor dem Rendern)
+    const s = (item.slides && item.slides[0]) || {};
+    const head = s.headline || item.hook || '';
+    const body = s.body || s.subtext || s.text || '';
+    return `<div class="reel-wrap" style="width:100%;height:100%;background:linear-gradient(160deg,#fff,#eef3e8);display:flex;flex-direction:column;justify-content:center;padding:22px;">
+      <div class="reel-panel-brand" style="color:#555;">FLORIAN JOHN · KINDERFINANZEN</div>
+      <div class="reel-sec-headline" style="color:#8BC540;margin-top:10px;">${head}</div>
+      <div class="reel-sec-body" style="color:#1A1A1A;">${(body || '').split('\n')[0]}</div>
+    </div>`;
+  }
   // Placeholder
-  const icons = { loop_reel: '▶', carousel: '⊟', single_image: '🖼' };
+  const icons = { loop_reel: '▶', carousel: '⊟', single_image: '🖼', story: '📱' };
   return `<div class="thumb-placeholder"><svg width="32" height="32" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg><span>${icons[item.format] || ''} ${item.format}</span></div>`;
 }
 
@@ -1460,8 +1481,8 @@ async function updateStatus(id, newStatus, feedback) {
     if (!r.ok) throw new Error(d.message);
     _qsha = d.content.sha;
 
-    // Carousel content approved → trigger image generation workflow automatically
-    if (newStatus === 'approved' && item.format === 'carousel') {
+    // Image-based content approved → trigger image generation workflow automatically
+    if (newStatus === 'approved' && ['carousel','single_image','story'].includes(item.format)) {
       showToast('✓ Inhalt freigegeben — Bilder werden generiert…');
       fetch(`https://api.github.com/repos/${REPO}/actions/workflows/generate-carousel-images.yml/dispatches`, {
         method: 'POST',
@@ -1598,7 +1619,7 @@ function renderIdeas() {
   list.innerHTML = [...IDEAS].reverse().map(idea => `
     <div class="idea-item ${idea.status === 'processed' ? 'idea-processed' : ''}">
       <div class="idea-meta">
-        <span class="idea-format">${idea.format_hint === 'carousel' ? 'Karussell' : idea.format_hint === 'loop_reel' ? 'Loop-Reel' : 'Auto'}</span>
+        <span class="idea-format">${({carousel:'Karussell',loop_reel:'Loop-Reel',single_image:'Einzelbild',story:'Story'})[idea.format_hint] || 'Auto'}</span>
         <span class="idea-status ${idea.status === 'processed' ? 'done' : ''}">${idea.status === 'pending' ? '⏳ Ausstehend' : idea.status === 'processed' ? '✓ Verarbeitet' : idea.status}</span>
         <span class="idea-date">${new Date(idea.submittedAt).toLocaleDateString('de-DE')}</span>
       </div>
@@ -1760,9 +1781,14 @@ function buildModalHTML(item) {
       <div class="modal-thumbs">
         ${item.asset_urls.map((u, i) => `<img class="modal-thumb ${i===0?'active':''}" src="${u}" onclick="mviewGoto(${i},${item.asset_urls.length})">`).join('')}
       </div>`;
+  } else if ((item.format === 'single_image' || item.format === 'story') && (item.asset_url || (item.asset_urls && item.asset_urls[0]))) {
+    const img = item.asset_url || item.asset_urls[0];
+    mediaHTML = `<div class="modal-viewer" style="align-items:center;justify-content:center;">
+      <img src="${img}" style="max-height:65vh;max-width:100%;border-radius:10px;display:block;">
+    </div>`;
   } else {
     const slides = item.slides || [];
-    mediaHTML = `<div class="modal-viewer"><div class="scene-card" style="width:100%;max-width:420px;"><div class="scene-idx">Slides</div>${slides.map((s,i) => `<div class="scene-text" style="margin-bottom:10px;"><strong>${i+1}.</strong> ${s.text || s.headline || ''}</div>`).join('')}</div></div>`;
+    mediaHTML = `<div class="modal-viewer"><div class="scene-card" style="width:100%;max-width:420px;"><div class="scene-idx">${item.format === 'story' ? 'Story' : 'Slides'}</div>${slides.map((s,i) => `<div class="scene-text" style="margin-bottom:10px;"><strong>${i+1}.</strong> ${s.text || s.headline || ''}${s.body ? ' — ' + s.body : ''}</div>`).join('')}</div></div>`;
   }
 
   const scenesHTML = item.loop_scenes ? `
