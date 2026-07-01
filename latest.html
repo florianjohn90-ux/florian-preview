@@ -617,6 +617,16 @@
     color: #555;
     line-height: 1.5;
   }
+  .feedback-note {
+    margin-top: 8px;
+    padding: 8px 10px;
+    background: #fff7e6;
+    border-left: 3px solid #f0ad4e;
+    border-radius: 6px;
+    font-size: 12.5px;
+    color: #7a5b1e;
+    line-height: 1.45;
+  }
   .caption-more {
     color: #8BC540;
     font-weight: 600;
@@ -1144,10 +1154,7 @@
   <div class="filter-inner" id="filterBar">
     <button class="filter-pill active" data-filter="all">Alle</button>
     <button class="filter-pill" data-filter="pending_approval">Ausstehend</button>
-    <button class="filter-pill" data-filter="approved">Inhalt ✓</button>
-    <button class="filter-pill" data-filter="images_pending_approval">🖼 Bilder prüfen</button>
-    <button class="filter-pill" data-filter="images_approved">Bereit</button>
-    <button class="filter-pill" data-filter="rejected">Abgelehnt</button>
+    <button class="filter-pill" data-filter="freigegeben">Freigegeben</button>
     <button class="filter-pill" data-filter="posted">Gepostet</button>
     <button class="filter-pill" data-filter="ideas" style="margin-left:auto">💡 Ideen</button>
   </div>
@@ -1287,12 +1294,26 @@ function renderStats() {
   `;
 }
 
+// "Freigegeben" bündelt alle vom Nutzer freigegebenen Zwischenschritte
+// (Inhalt freigegeben, Bilder in Arbeit/geprüft, bereit zum Posten).
+const FILTER_GROUPS = {
+  // Kritisierte Posts (revision_requested) werden gerade überarbeitet → bleiben
+  // unter "Ausstehend" sichtbar, damit sie nach dem Feedback nicht verschwinden.
+  pending_approval: ['pending_approval', 'revision_requested'],
+  freigegeben: ['approved', 'images_pending_approval', 'images_approved'],
+};
+function matchesFilter(item, filter) {
+  if (filter === 'all') return true;
+  const group = FILTER_GROUPS[filter];
+  return group ? group.includes(item.status) : item.status === filter;
+}
+
 function renderGrid() {
   const grid = document.getElementById('grid');
   grid.innerHTML = '';
   QUEUE.forEach(item => {
     const card = buildCard(item);
-    if (activeFilter !== 'all' && item.status !== activeFilter) card.classList.add('hidden');
+    if (!matchesFilter(item, activeFilter)) card.classList.add('hidden');
     grid.appendChild(card);
   });
 }
@@ -1343,6 +1364,7 @@ function buildCard(item) {
     <div class="card-hook">${item.hook || ''}</div>
     ${item.loop_scenes ? `<div class="scene-count">${item.loop_scenes.length} Szenen</div>` : ''}
     <div class="caption-preview">${captionShort}</div>
+    ${item.feedback ? `<div class="feedback-note">✏️ Deine Kritik: „${(item.feedback||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').slice(0,120)}"${item.status==='revision_requested' ? ' · wird überarbeitet…' : ''}</div>` : ''}
     ${isActionable ? `
     <div class="action-row">
       <button class="btn-approve" data-action="${isImageStep ? 'approve_images' : 'approve'}" data-id="${item.id}">
@@ -1540,21 +1562,22 @@ async function submitRevision(id, feedback) {
       body: JSON.stringify({ ref: BRANCH })
     }).catch(() => {});
 
-    showToast('✓ Kritik angekommen — Post wird überarbeitet und kommt zurück zur Prüfung');
+    const short = feedback.length > 60 ? feedback.slice(0, 60) + '…' : feedback;
+    showToast(`✓ Kritik angekommen: „${short}" — Post wird überarbeitet und kommt zurück zur Prüfung`, 6000);
   } catch (e) {
-    showToast('Fehler: ' + e.message);
+    showToast('Fehler: ' + e.message, 5000);
   }
 }
 
 // ── Toast ───────────────────────────────────────────────────────
 
 let toastTimer;
-function showToast(msg) {
+function showToast(msg, dur = 2200) {
   const t = document.getElementById('toast');
   t.textContent = msg;
   t.classList.add('show');
   clearTimeout(toastTimer);
-  toastTimer = setTimeout(() => t.classList.remove('show'), 2200);
+  toastTimer = setTimeout(() => t.classList.remove('show'), dur);
 }
 
 // ── Filter ──────────────────────────────────────────────────────
@@ -1581,7 +1604,7 @@ document.getElementById('filterBar').addEventListener('click', e => {
   document.querySelectorAll('.card[data-id]').forEach(card => {
     const item = QUEUE.find(i => i.id === card.dataset.id);
     if (!item) return;
-    card.classList.toggle('hidden', activeFilter !== 'all' && item.status !== activeFilter);
+    card.classList.toggle('hidden', !matchesFilter(item, activeFilter));
   });
 });
 
@@ -1825,6 +1848,7 @@ function buildModalHTML(item) {
           <span class="status-badge status-${item.status}">${fmtStatus(item)}</span>
         </div>
         <div class="modal-hook">${item.hook || ''}</div>
+        ${item.feedback ? `<div class="feedback-note" style="margin-bottom:12px">✏️ Deine Kritik: „${(item.feedback||'').replace(/&/g,'&amp;').replace(/</g,'&lt;')}"${item.status==='revision_requested' ? ' · wird gerade überarbeitet und kommt zurück zur Prüfung.' : ''}</div>` : ''}
         ${scenesHTML}
         ${item.caption && item.loop_scenes ? `<p class="modal-section-label">Caption</p><div class="modal-caption" style="flex:none;max-height:120px;">${item.caption}</div>` : ''}
         ${item.format === 'loop_reel' ? `
