@@ -362,14 +362,16 @@
   border-radius: 12px;
   border: 1px solid rgba(255,255,255,0.30);
   box-shadow: inset 0 1px 0 rgba(255,255,255,0.35), 0 6px 30px rgba(0,0,0,0.35);
-  overflow: hidden;
+  overflow-y: auto;               /* scroll dense reels instead of clipping top/bottom */
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start;    /* start at top so nothing is cut off */
   padding: 32px 14px 16px;
   text-align: center;
 }
+.modal-reel-glass::-webkit-scrollbar { width: 5px; }
+.modal-reel-glass::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.2); border-radius: 3px; }
 .modal-reel-glass::before {
   content: '';
   position: absolute;
@@ -882,8 +884,8 @@
     display: flex;
     flex-direction: column;
     min-height: 0;
-    padding: 18px 22px 0;
-    overflow: hidden;
+    padding: 18px 22px 18px;
+    overflow-y: auto;   /* whole right column scrolls as one — nothing gets clipped */
   }
   .modal-header {
     display: flex;
@@ -920,7 +922,7 @@
     margin: 0 0 6px;
     flex-shrink: 0;
   }
-  /* caption gets its own scroll container so it never grows the layout */
+  /* caption flows at natural height inside the scrolling meta column */
   .modal-caption {
     font-size: 13.5px;
     line-height: 1.55;
@@ -930,9 +932,7 @@
     border: 1.5px solid #eee;
     border-radius: 10px;
     padding: 12px 14px;
-    overflow-y: auto;
-    flex: 1;
-    min-height: 60px;
+    flex: none;
     margin-bottom: 12px;
   }
   .scene-card {
@@ -1025,8 +1025,8 @@
     .modal-viewer img,
     .modal-viewer video,
     .modal-viewer .scene-card { max-height: 42vh; }
-    .modal-meta { padding: 16px 18px 0; overflow: visible; }
-    .modal-caption { flex: none; max-height: 22vh; }
+    .modal-meta { padding: 16px 18px 18px; overflow: visible; }
+    .modal-caption { flex: none; }
     .modal-footer { flex-wrap: wrap; padding: 12px 18px 14px; }
     .modal-actions { flex-direction: row; width: 100%; }
     .modal-actions button { flex: 1; }
@@ -1816,21 +1816,21 @@ function buildModalHTML(item) {
 
   const scenesHTML = item.loop_scenes ? `
     <p class="modal-section-label">Szenen</p>
-    <div style="display:flex;flex-direction:column;gap:8px;overflow-y:auto;flex:1;margin-bottom:12px;">
+    <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:14px;">
       ${item.loop_scenes.map((s, i) => `
-        <div class="scene-card" style="flex-shrink:0;">
+        <div class="scene-card">
           <div class="scene-idx"><span>Szene ${i+1}</span><span>${s.dur}s</span></div>
           <div class="scene-text">${s.headline}</div>
           <div class="scene-sub">${s.body || ''}</div>
         </div>`).join('')}
     </div>` : item.slides ? `
     <p class="modal-section-label">Slides</p>
-    <div style="display:flex;flex-direction:column;gap:8px;overflow-y:auto;flex:1;margin-bottom:12px;">
+    <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:14px;">
       ${item.slides.map((s, i) => `
-        <div class="scene-card" style="flex-shrink:0;">
+        <div class="scene-card">
           <div class="scene-idx"><span>Slide ${i+1}</span></div>
-          <div class="scene-text">${s.text || s.headline || ''}</div>
-          ${s.subtext ? `<div class="scene-sub">${s.subtext}</div>` : ''}
+          <div class="scene-text">${s.headline || s.text || ''}</div>
+          ${(s.body || s.subtext) ? `<div class="scene-sub">${s.body || s.subtext}</div>` : ''}
         </div>`).join('')}
     </div>` : `
     <p class="modal-section-label">Caption</p>
@@ -1940,6 +1940,18 @@ document.getElementById('loadingState').style.display = 'none';
 document.getElementById('grid').style.display = 'grid';
 renderAll();
 tryFetchFresh(); // optional enhancement if PAT exists
+
+// Auto-refresh: hole alle 45s den neuesten Stand — kein "Neu laden" mehr nötig.
+// Nicht stören, wenn ein Post geöffnet ist oder gerade getippt wird.
+setInterval(() => {
+  if (document.hidden) return;
+  if (typeof openItemId !== 'undefined' && openItemId) return;
+  const el = document.activeElement;
+  if (el && (el.tagName === 'TEXTAREA' || el.tagName === 'INPUT')) return;
+  const ideasOpen = document.getElementById('ideasPanel');
+  if (ideasOpen && ideasOpen.classList.contains('show')) return;
+  tryFetchFresh();
+}, 45000);
 
 // One-time token bootstrap: if no token is present yet, show a paste banner.
 // After pasting once it is stored in localStorage and never asked again.
